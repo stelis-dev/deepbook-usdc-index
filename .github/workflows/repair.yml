@@ -1,0 +1,57 @@
+name: Repair DeepBook USDC index
+
+on:
+  schedule:
+    - cron: "47 3 * * *"
+  workflow_dispatch:
+    inputs:
+      lookback_hours:
+        description: "Repair lookback window in 6-hour units"
+        required: true
+        default: "24"
+        type: choice
+        options:
+          - "6"
+          - "12"
+          - "18"
+          - "24"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deepbook-usdc-index-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm run check
+      - name: Repair live buckets
+        run: npm run collect
+        env:
+          SUI_GRPC_URL: https://fullnode.mainnet.sui.io:443
+          SUI_GRAPHQL_URL: https://graphql.mainnet.sui.io/graphql
+          LIVE_RUN_MODE: repair
+          REPAIR_LIVE_LOOKBACK_HOURS: ${{ github.event_name == 'workflow_dispatch' && inputs.lookback_hours || '24' }}
+      - run: npm run audit:gaps
+      - name: Commit generated data
+        run: |
+          if [ -n "$(git status --porcelain data _workflow)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data _workflow
+            git commit -m "Repair DeepBook USDC index"
+            git push
+          else
+            echo "No data changes"
+          fi

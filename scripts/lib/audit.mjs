@@ -1,0 +1,292 @@
+import { readdir } from "node:fs/promises";
+import { join } from "node:path";
+import { readJson } from "./io.mjs";
+import {
+  BAR_INTERVAL_MINUTES,
+  addMinutes,
+  barsWeekPath,
+  bucketStartsBetween,
+  compareIso,
+  floorIsoToInterval,
+} from "./paths.mjs";
+
+export async function auditGeneratedCoverage(input) {
+  const readBarsFile = input.readBarsFile ?? readJson;
+  const scanTempFiles = input.scanTempFiles ?? true;
+  const weekCache = new Map();
+  const issues = [];
+  const knownMissing = [];
+  const summaries = [];
+
+  for (const pair of input.pairs) {
+    const pairState = input.workflow.pairs?.[pair.id];
+    const startIso = coverageStart(pairState);
+    const endIso = coverageEnd(pairState);
+    if (!pairState || !startIso || !endIso) {
+      summaries.push(emptySummary(pair.id));
+      continue;
+    }
+
+    const summary = emptySummary(pair.id, startIso, endIso);
+    summaries.push(summary);
+
+    if (!isAligned(startIso) || !isAligned(endIso)) {
+      issues.push({
+        pairId: pair.id,
+        start: startIso,
+        type: "unaligned_coverage_range",
+      });
+      continue;
+    }
+    if (compareIso(startIso, endIso) > 0) {
+      issues.push({
+        pairId: pair.id,
+        start: startIso,
+        end: endIso,
+        type: "invalid_coverage_range",
+      });
+      continue;
+    }
+
+    const trackedMissing = new Set(
+      (pairState.missingBuckets ?? []).map((bucket) => bucket.start),
+    );
+    for (const start of bucketStartsBetween(
+      startIso,
+      addMinutes(endIso, BAR_INTERVAL_MINUTES),
+      BAR_INTERVAL_MINUTES,
+    )) {
+      const day = daySummary(summary, start);
+      day.expected += 1;
+      summary.expected += 1;
+
+      const barsPath = barsWeekPath(pair.id, start);
+      const weekFile = await cachedWeekFile(weekCache, readBarsFile, barsPath);
+      if (!weekFile) {
+        day.absent += 1;
+        summary.absent += 1;
+        issues.push({ pairId: pair.id, start, type: "absent_week_file" });
+        continue;
+      }
+
+      const matches = (weekFile.bars ?? []).filter(
+        (bar) => bar.start === start,
+      );
+      if (matches.length === 0) {
+        day.absent += 1;
+        summary.absent += 1;
+        issues.push({ pairId: pair.id, start, type: "absent_bar" });
+        continue;
+      }
+      if (matches.length > 1) {
+        issues.push({ pairId: pair.id, start, type: "duplicate_bar" });
+      }
+
+      const bar = matches[0];
+      if (bar.end !== addMinutes(start, BAR_INTERVAL_MINUTES)) {
+        issues.push({
+          pairId: pair.id,
+          start,
+          type: "invalid_bar_end",
+          actual: bar.end,
+        });
+      }
+
+      if (bar.status === "filled") {
+        day.filled += 1;
+        summary.filled += 1;
+      } else if (bar.status === "empty") {
+        day.empty += 1;
+        summary.empty += 1;
+      } else if (bar.status === "missing") {
+        day.missing += 1;
+        summary.missing += 1;
+        knownMissing.push({ pairId: pair.id, start });
+        if (!trackedMissing.has(start)) {
+          issues.push({
+            pairId: pair.id,
+            start,
+            type: "missing_bar_not_tracked",
+          });
+        }
+      } else {
+        issues.push({
+          pairId: pair.id,
+          start,
+          type: "invalid_bar_status",
+          actual: bar.status,
+        });
+      }
+
+      if (bar.status !== "missing" && trackedMissing.has(start)) {
+        issues.push({
+          pairId: pair.id,
+          start,
+          type: "stale_missing_state",
+        });
+      }
+    }
+  }
+
+  if (scanTempFiles) {
+    for (const path of await findTempFiles(input.dataRoot ?? "data")) {
+      issues.push({
+        pairId: "*",
+        start: null,
+        type: "temp_file",
+        path,
+      });
+    }
+  }
+
+  return {
+    ok: issues.length === 0,
+    issues,
+    knownMissing,
+    summaries,
+  };
+}
+
+export function formatAuditReport(result, options = {}) {
+  const maxIssues = options.maxIssues ?? 50;
+  const lines = [];
+  const expected = result.summaries.reduce(
+    (total, summary) => total + summary.expected,
+    0,
+  );
+  const missing = result.summaries.reduce(
+    (total, summary) => total + summary.missing,
+    0,
+  );
+  const absent = result.summaries.reduce(
+    (total, summary) => total + summary.absent,
+    0,
+  );
+  lines.push(
+    `coverage audit: ${result.ok ? "ok" : "failed"} (${expected} expected 10-minute bars, ${missing} known missing, ${absent} absent)`,
+  );
+
+  for (const summary of result.summaries) {
+    if (summary.expected === 0) {
+      lines.push(`${summary.pairId}: no covered range`);
+      continue;
+    }
+    lines.push(
+      `${summary.pairId}: ${summary.start}..${addMinutes(summary.end, BAR_INTERVAL_MINUTES)} expected=${summary.expected} filled=${summary.filled} empty=${summary.empty} missing=${summary.missing} absent=${summary.absent}`,
+    );
+    for (const day of summary.days.filter(
+      (item) => item.missing > 0 || item.absent > 0,
+    )) {
+      lines.push(
+        `  ${day.date}: expected=${day.expected} missing=${day.missing} absent=${day.absent}`,
+      );
+    }
+  }
+
+  if (result.issues.length > 0) {
+    lines.push(
+      `issues (${Math.min(result.issues.length, maxIssues)}/${result.issues.length}):`,
+    );
+    for (const issue of result.issues.slice(0, maxIssues)) {
+      lines.push(
+        `  ${issueLabel(issue)}: ${issue.type}${issue.actual ? ` (${issue.actual})` : ""}`,
+      );
+    }
+  }
+
+  return lines.join("\n");
+}
+
+function coverageStart(pairState) {
+  if (!pairState) return null;
+  return [
+    pairState.backfill?.oldestCoveredBucketStart,
+    pairState.live?.firstCoveredBucketStart,
+  ]
+    .filter(Boolean)
+    .sort(compareIso)[0];
+}
+
+function coverageEnd(pairState) {
+  if (!pairState) return null;
+  return (
+    pairState.live?.lastQueuedBucketStart ??
+    pairState.live?.lastCoveredBucketStart
+  );
+}
+
+function emptySummary(pairId, start = null, end = null) {
+  return {
+    pairId,
+    start,
+    end,
+    expected: 0,
+    filled: 0,
+    empty: 0,
+    missing: 0,
+    absent: 0,
+    days: [],
+  };
+}
+
+function daySummary(summary, start) {
+  const date = start.slice(0, 10);
+  let day = summary.days.find((candidate) => candidate.date === date);
+  if (!day) {
+    day = {
+      date,
+      expected: 0,
+      filled: 0,
+      empty: 0,
+      missing: 0,
+      absent: 0,
+    };
+    summary.days.push(day);
+  }
+  return day;
+}
+
+function isAligned(iso) {
+  return floorIsoToInterval(new Date(iso), BAR_INTERVAL_MINUTES) === iso;
+}
+
+async function cachedWeekFile(cache, readBarsFile, path) {
+  if (!cache.has(path)) {
+    cache.set(
+      path,
+      readBarsFile(path, null).catch((error) => {
+        if (error?.code === "ENOENT") return null;
+        throw error;
+      }),
+    );
+  }
+  return await cache.get(path);
+}
+
+async function findTempFiles(root) {
+  const files = [];
+  await walkTempFiles(root, files);
+  return files.sort();
+}
+
+async function walkTempFiles(directory, files) {
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    (error) => {
+      if (error?.code === "ENOENT") return [];
+      throw error;
+    },
+  );
+  for (const entry of entries) {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      await walkTempFiles(path, files);
+    } else if (entry.isFile() && entry.name.endsWith(".tmp")) {
+      files.push(path);
+    }
+  }
+}
+
+function issueLabel(issue) {
+  if (issue.path) return issue.path;
+  return `${issue.pairId} ${issue.start}`;
+}

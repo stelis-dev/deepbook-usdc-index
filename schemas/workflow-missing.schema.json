@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cdn.jsdelivr.net/gh/stelis-dev/deepbook-usdc-index@main/schemas/workflow-missing.schema.json",
+  "title": "DeepBook USDC Workflow Missing Bucket State",
+  "type": "object",
+  "required": ["schemaVersion", "barIntervalMinutes", "updatedAt", "pairs"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "barIntervalMinutes": { "const": 10 },
+    "updatedAt": { "type": ["string", "null"], "format": "date-time" },
+    "pairs": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/pairState" }
+    }
+  },
+  "$defs": {
+    "pairState": {
+      "type": "object",
+      "required": ["live", "backfill", "missingBuckets"],
+      "additionalProperties": false,
+      "properties": {
+        "live": {
+          "type": "object",
+          "required": [
+            "firstCoveredBucketStart",
+            "lastQueuedBucketStart",
+            "lastCoveredBucketStart",
+            "lastCoveredCheckpoint"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "firstCoveredBucketStart": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            },
+            "lastQueuedBucketStart": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            },
+            "lastCoveredBucketStart": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            },
+            "lastCoveredCheckpoint": {
+              "type": ["string", "null"],
+              "pattern": "^[0-9]+$"
+            }
+          }
+        },
+        "backfill": {
+          "type": "object",
+          "required": [
+            "status",
+            "oldestCoveredBucketStart",
+            "oldestCoveredCheckpoint",
+            "cursor",
+            "stoppedReason"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": ["not_started", "running", "complete", "stopped"]
+            },
+            "oldestCoveredBucketStart": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            },
+            "oldestCoveredCheckpoint": {
+              "type": ["string", "null"],
+              "pattern": "^[0-9]+$"
+            },
+            "cursor": { "type": ["string", "null"] },
+            "stoppedReason": { "type": ["string", "null"] }
+          }
+        },
+        "missingBuckets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/missingBucket" }
+        }
+      }
+    },
+    "missingBucket": {
+      "type": "object",
+      "required": ["start", "end", "reason", "attempts", "lastAttemptedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "start": { "type": "string", "format": "date-time" },
+        "end": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string", "minLength": 1 },
+        "attempts": { "type": "integer", "minimum": 1 },
+        "lastAttemptedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

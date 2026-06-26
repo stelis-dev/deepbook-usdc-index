@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cdn.jsdelivr.net/gh/stelis-dev/deepbook-usdc-index@main/schemas/bars-week.schema.json",
+  "title": "DeepBook USDC Weekly 10-Minute Bars",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "pairId",
+    "week",
+    "barIntervalMinutes",
+    "priceConvention",
+    "disclaimer",
+    "bars"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "pairId": { "type": "string", "pattern": "^[A-Z0-9]+_USDC$" },
+    "week": {
+      "type": "object",
+      "required": ["weekYear", "week", "startsAt", "endsAt", "timeZone"],
+      "additionalProperties": false,
+      "properties": {
+        "weekYear": { "type": "integer", "minimum": 2020 },
+        "week": { "type": "integer", "minimum": 1, "maximum": 53 },
+        "startsAt": { "type": "string", "format": "date-time" },
+        "endsAt": { "type": "string", "format": "date-time" },
+        "timeZone": { "const": "UTC" }
+      }
+    },
+    "barIntervalMinutes": { "const": 10 },
+    "priceConvention": { "const": "USDC_PER_BASE" },
+    "disclaimer": { "type": "string", "minLength": 1 },
+    "bars": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/bar" }
+    }
+  },
+  "$defs": {
+    "bar": {
+      "type": "object",
+      "required": [
+        "start",
+        "end",
+        "status",
+        "eventCount",
+        "open",
+        "high",
+        "low",
+        "close",
+        "baseVolumeAtomic",
+        "quoteVolumeAtomic"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "start": { "type": "string", "format": "date-time" },
+        "end": { "type": "string", "format": "date-time" },
+        "status": { "enum": ["filled", "empty", "missing"] },
+        "eventCount": { "type": ["integer", "null"], "minimum": 0 },
+        "open": { "type": ["string", "null"] },
+        "high": { "type": ["string", "null"] },
+        "low": { "type": ["string", "null"] },
+        "close": { "type": ["string", "null"] },
+        "baseVolumeAtomic": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9]+$"
+        },
+        "quoteVolumeAtomic": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9]+$"
+        },
+        "missingReason": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "missing" } } },
+          "then": { "required": ["missingReason"] }
+        }
+      ]
+    }
+  }
+}

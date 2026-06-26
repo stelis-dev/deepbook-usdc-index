@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cdn.jsdelivr.net/gh/stelis-dev/deepbook-usdc-index@main/registry/pairs.schema.json",
+  "title": "DeepBook USDC Index Pair Registry",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "network",
+    "quoteAsset",
+    "eventSources",
+    "pairs"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "network": {
+      "const": "sui:mainnet"
+    },
+    "quoteAsset": {
+      "type": "object",
+      "required": ["symbol", "coinType", "decimals", "disclaimer"],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "const": "USDC"
+        },
+        "coinType": {
+          "type": "string",
+          "pattern": "^0x[0-9a-f]+::[A-Za-z0-9_]+::[A-Za-z0-9_]+$"
+        },
+        "decimals": {
+          "const": 6
+        },
+        "disclaimer": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "eventSources": {
+      "type": "object",
+      "required": ["orderInfoPackageIds", "orderFilledEventTypes"],
+      "additionalProperties": false,
+      "properties": {
+        "orderInfoPackageIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^0x[0-9a-f]+$"
+          },
+          "uniqueItems": true
+        },
+        "orderFilledEventTypes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^0x[0-9a-f]+::order_info::OrderFilled$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "pairs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/pair"
+      }
+    }
+  },
+  "$defs": {
+    "pair": {
+      "type": "object",
+      "required": [
+        "id",
+        "enabled",
+        "poolId",
+        "baseAsset",
+        "quoteAsset",
+        "priceConvention",
+        "collection"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]+_USDC$"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "poolId": {
+          "type": "string",
+          "pattern": "^0x[0-9a-f]+$"
+        },
+        "baseAsset": {
+          "$ref": "#/$defs/asset"
+        },
+        "quoteAsset": {
+          "const": "USDC"
+        },
+        "priceConvention": {
+          "const": "USDC_PER_BASE"
+        },
+        "collection": {
+          "type": "object",
+          "required": ["barIntervalMinutes", "rollingRetentionYears"],
+          "additionalProperties": false,
+          "properties": {
+            "barIntervalMinutes": {
+              "const": 10
+            },
+            "rollingRetentionYears": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "required": ["symbol", "coinType", "decimals"],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]+$"
+        },
+        "coinType": {
+          "type": "string",
+          "pattern": "^0x[0-9a-f]+::[A-Za-z0-9_]+::[A-Za-z0-9_]+$"
+        },
+        "decimals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "deepbook-usdc-index",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Public DeepBook observed-fill index for selected Sui mainnet pools quoted in canonical USDC.",
+  "scripts": {
+    "collect": "node scripts/collect.mjs",
+    "backfill": "node scripts/backfill.mjs",
+    "repair:live": "node scripts/collect.mjs --mode repair",
+    "repair:live24h": "node scripts/collect.mjs --mode repair --hours 24",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "test": "node --test",
+    "audit:gaps": "node scripts/audit-gaps.mjs",
+    "validate:registry": "node scripts/validate-registry.mjs",
+    "check": "npm run format:check && npm run lint && npm test"
+  },
+  "dependencies": {
+    "@mysten/sui": "2.17.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.5.0",
+    "prettier": "^3.8.5"
+  }
+}
