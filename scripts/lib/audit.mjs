@@ -1,6 +1,7 @@
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { readJson } from "./io.mjs";
+import { summarizePairBars } from "./reconcile.mjs";
 import {
   BAR_INTERVAL_MINUTES,
   addMinutes,
@@ -17,13 +18,35 @@ export async function auditGeneratedCoverage(input) {
   const issues = [];
   const knownMissing = [];
   const summaries = [];
+  const dataRoot = input.dataRoot ?? "data";
+  const scanLocalDataSummary =
+    input.dataRoot !== undefined || input.readBarsFile === undefined;
 
   for (const pair of input.pairs) {
     const pairState = input.workflow.pairs?.[pair.id];
     const startIso = coverageStart(pairState);
     const endIso = coverageEnd(pairState);
+    const dataSummary = scanLocalDataSummary
+      ? await summarizePairBars({
+          pairId: pair.id,
+          dataRoot,
+        })
+      : emptyDataSummary(pair.id);
     if (!pairState || !startIso || !endIso) {
       summaries.push(emptySummary(pair.id));
+      if (dataSummary.barCount > 0 && !pairState) {
+        issues.push({
+          pairId: pair.id,
+          start: dataSummary.firstBarStart,
+          type: "data_without_workflow_state",
+        });
+      } else if (dataSummary.coveredCount > 0) {
+        issues.push({
+          pairId: pair.id,
+          start: dataSummary.firstCoveredStart,
+          type: "data_without_workflow_coverage",
+        });
+      }
       continue;
     }
 
@@ -46,6 +69,26 @@ export async function auditGeneratedCoverage(input) {
         type: "invalid_coverage_range",
       });
       continue;
+    }
+    if (
+      dataSummary.firstBarStart &&
+      compareIso(dataSummary.firstBarStart, startIso) < 0
+    ) {
+      issues.push({
+        pairId: pair.id,
+        start: dataSummary.firstBarStart,
+        type: "data_before_workflow_coverage",
+      });
+    }
+    if (
+      dataSummary.lastBarStart &&
+      compareIso(dataSummary.lastBarStart, endIso) > 0
+    ) {
+      issues.push({
+        pairId: pair.id,
+        start: dataSummary.lastBarStart,
+        type: "data_after_workflow_coverage",
+      });
     }
 
     const trackedMissing = new Set(
@@ -129,7 +172,7 @@ export async function auditGeneratedCoverage(input) {
   }
 
   if (scanTempFiles) {
-    for (const path of await findTempFiles(input.dataRoot ?? "data")) {
+    for (const path of await findTempFiles(dataRoot)) {
       issues.push({
         pairId: "*",
         start: null,
@@ -202,6 +245,7 @@ function coverageStart(pairState) {
   return [
     pairState.backfill?.oldestCoveredBucketStart,
     pairState.live?.firstCoveredBucketStart,
+    ...(pairState.missingBuckets ?? []).map((bucket) => bucket.start),
   ]
     .filter(Boolean)
     .sort(compareIso)[0];
@@ -226,6 +270,20 @@ function emptySummary(pairId, start = null, end = null) {
     missing: 0,
     absent: 0,
     days: [],
+  };
+}
+
+function emptyDataSummary(pairId) {
+  return {
+    pairId,
+    barCount: 0,
+    coveredCount: 0,
+    missingCount: 0,
+    firstBarStart: null,
+    lastBarStart: null,
+    firstCoveredStart: null,
+    lastCoveredStart: null,
+    missingBars: [],
   };
 }
 

@@ -27,12 +27,27 @@ import {
   BAR_INTERVAL_MINUTES,
   compareIso,
   floorIsoToInterval,
+  latestClosedBucketStart,
 } from "./lib/paths.mjs";
 import {
+  clearMissingBucketsBetween,
   loadWorkflowState,
   pairWorkflowState,
   saveWorkflowState,
 } from "./lib/state.mjs";
+import {
+  enforceDataRetention,
+  formatRetentionSummary,
+  retentionCutoffStart,
+} from "./lib/retention.mjs";
+import {
+  clearResolvedMissingBuckets,
+  formatMissingCleanupSummary,
+} from "./lib/missing.mjs";
+import {
+  formatReconcileSummary,
+  reconcileWorkflowWithData,
+} from "./lib/reconcile.mjs";
 
 const args = parseArgs();
 const registry = await loadRegistry();
@@ -55,10 +70,36 @@ const resolveBackfillCheckpointRange = createBucketCheckpointRangeResolver({
   retainedRange,
   maxCheckpointQueries: Number(process.env.MAX_CHECKPOINT_QUERIES ?? 80),
 });
+const latestClosedStart = latestClosedBucketStart(
+  new Date(),
+  BAR_INTERVAL_MINUTES,
+);
 
 console.log(
   `backfill-window-hours: ${lookbackHours}, max-transaction-pages: ${maxTransactionPages}`,
 );
+
+if (writeGeneratedData) {
+  const reconcileSummaries = await reconcileWorkflowWithData({
+    pairs,
+    workflow,
+  });
+  for (const summary of reconcileSummaries) {
+    if (summary.changed) {
+      console.log(formatReconcileSummary(summary));
+    }
+  }
+
+  const missingCleanupSummaries = await clearResolvedMissingBuckets({
+    pairs,
+    workflow,
+  });
+  for (const summary of missingCleanupSummaries) {
+    if (summary.cleared > 0) {
+      console.log(formatMissingCleanupSummary(summary));
+    }
+  }
+}
 
 for (const pair of pairs) {
   const pairState = pairWorkflowState(workflow, pair.id);
@@ -81,13 +122,25 @@ for (const pair of pairs) {
     new Date(firstTransaction.timestamp),
     BAR_INTERVAL_MINUTES,
   );
-  if (compareIso(anchor, firstBucketStart) <= 0) {
+  const retentionStart = retentionCutoffStart(
+    latestClosedStart,
+    pair.collection.rollingRetentionYears,
+  );
+  const earliestBucketStart =
+    compareIso(retentionStart, firstBucketStart) > 0
+      ? retentionStart
+      : firstBucketStart;
+  const completeReason =
+    compareIso(retentionStart, firstBucketStart) > 0
+      ? "retention_floor_reached"
+      : "no_older_pair_events";
+  if (compareIso(anchor, earliestBucketStart) <= 0) {
     if (writeGeneratedData) {
       pairState.backfill.cursor = null;
       pairState.backfill.status = "complete";
-      pairState.backfill.stoppedReason = "no_older_pair_events";
+      pairState.backfill.stoppedReason = completeReason;
     }
-    console.log(`${pair.id}: backfill reached earliest pool transaction`);
+    console.log(`${pair.id}: backfill reached ${completeReason}`);
     continue;
   }
 
@@ -95,7 +148,7 @@ for (const pair of pairs) {
     pair,
     eventTypes,
     anchor,
-    firstBucketStart,
+    firstBucketStart: earliestBucketStart,
     lookbackHours,
     pageSize: transactionPageSize,
     maxPages: maxTransactionPages,
@@ -132,13 +185,14 @@ for (const pair of pairs) {
       endExclusiveIso: anchor,
       writeGeneratedData,
     });
+    clearMissingBucketsBetween(pairState, chunk.startIso, anchor);
     pairState.backfill.oldestCoveredBucketStart = chunk.startIso;
     pairState.backfill.oldestCoveredCheckpoint = chunk.resolved.fromCheckpoint;
     pairState.backfill.cursor = null;
     pairState.backfill.status =
-      chunk.startIso === firstBucketStart ? "complete" : "running";
+      chunk.startIso === earliestBucketStart ? "complete" : "running";
     pairState.backfill.stoppedReason =
-      chunk.startIso === firstBucketStart ? "no_older_pair_events" : null;
+      chunk.startIso === earliestBucketStart ? completeReason : null;
   }
   const oldest = oldestByCheckpoint(chunk.page.transactions);
   const newest = newestByCheckpoint(chunk.page.transactions);
@@ -148,6 +202,17 @@ for (const pair of pairs) {
 }
 
 if (writeGeneratedData) {
+  const retentionSummaries = await enforceDataRetention({
+    pairs,
+    workflow,
+    referenceIso: latestClosedStart,
+    writeGeneratedData,
+  });
+  for (const summary of retentionSummaries) {
+    if (summary.deletedFiles > 0 || summary.trimmedBars > 0) {
+      console.log(formatRetentionSummary(summary));
+    }
+  }
   await saveWorkflowState(workflow);
 }
 

@@ -22,6 +22,7 @@ import {
   nextLiveBucketStarts,
 } from "../scripts/lib/scheduling.mjs";
 import {
+  clearMissingBucketsBetween,
   initialPairWorkflowState,
   recordLiveBucketAttempt,
 } from "../scripts/lib/state.mjs";
@@ -29,6 +30,12 @@ import {
   liveRunModeFromInput,
   repairLiveLookbackHoursFromInput,
 } from "../scripts/lib/config.mjs";
+import {
+  enforceDataRetention,
+  retentionCutoffStart,
+} from "../scripts/lib/retention.mjs";
+import { clearResolvedMissingBuckets } from "../scripts/lib/missing.mjs";
+import { reconcileWorkflowWithData } from "../scripts/lib/reconcile.mjs";
 
 const registry = JSON.parse(await readFile("registry/pairs.json", "utf8"));
 const suiUsdc = registry.pairs.find((pair) => pair.id === "SUI_USDC");
@@ -596,6 +603,229 @@ test("live collection retries missing closed buckets without moving the frontier
   assert.deepEqual(state.missingBuckets, []);
 });
 
+test("backfill covered range clears tracked missing buckets in that range", () => {
+  const state = initialPairWorkflowState();
+  for (const [start, end] of [
+    ["2026-06-27T16:20:00.000Z", "2026-06-27T16:30:00.000Z"],
+    ["2026-06-27T16:30:00.000Z", "2026-06-27T16:40:00.000Z"],
+    ["2026-06-27T16:40:00.000Z", "2026-06-27T16:50:00.000Z"],
+    ["2026-06-27T16:50:00.000Z", "2026-06-27T17:00:00.000Z"],
+  ]) {
+    state.missingBuckets.push({
+      start,
+      end,
+      reason: "temporary_graphql_error",
+      attempts: 1,
+      lastAttemptedAt: "2026-06-27T17:00:00.000Z",
+    });
+  }
+
+  clearMissingBucketsBetween(
+    state,
+    "2026-06-27T16:30:00.000Z",
+    "2026-06-27T16:50:00.000Z",
+  );
+
+  assert.deepEqual(
+    state.missingBuckets.map((bucket) => bucket.start),
+    ["2026-06-27T16:20:00.000Z", "2026-06-27T16:50:00.000Z"],
+  );
+});
+
+test("resolved local bars are removed from missing workflow state without rereading chain data", async () => {
+  const state = initialPairWorkflowState();
+  for (const [start, end] of [
+    ["2026-06-27T16:20:00.000Z", "2026-06-27T16:30:00.000Z"],
+    ["2026-06-27T16:30:00.000Z", "2026-06-27T16:40:00.000Z"],
+    ["2026-06-27T16:40:00.000Z", "2026-06-27T16:50:00.000Z"],
+  ]) {
+    state.missingBuckets.push({
+      start,
+      end,
+      reason: "temporary_graphql_error",
+      attempts: 1,
+      lastAttemptedAt: "2026-06-27T17:00:00.000Z",
+    });
+  }
+
+  const [summary] = await clearResolvedMissingBuckets({
+    pairs: [suiUsdc],
+    workflow: { pairs: { SUI_USDC: state } },
+    readBarsFile: async () => ({
+      bars: [
+        {
+          start: "2026-06-27T16:20:00.000Z",
+          status: "empty",
+        },
+        {
+          start: "2026-06-27T16:30:00.000Z",
+          status: "missing",
+        },
+      ],
+    }),
+  });
+
+  assert.deepEqual(summary, {
+    pairId: "SUI_USDC",
+    cleared: 1,
+    remaining: 2,
+  });
+  assert.deepEqual(
+    state.missingBuckets.map((bucket) => bucket.start),
+    ["2026-06-27T16:30:00.000Z", "2026-06-27T16:40:00.000Z"],
+  );
+});
+
+test("workflow state can be reconciled from local public bars", async () => {
+  const root = await mkdtemp(join(tmpdir(), "deepbook-reconcile-"));
+  try {
+    const directory = join(root, "SUI_USDC", "bars", "2026");
+    await mkdir(directory, { recursive: true });
+    await writeFile(
+      join(directory, "W26.json"),
+      `${JSON.stringify({
+        bars: [
+          {
+            start: "2026-06-27T16:20:00.000Z",
+            end: "2026-06-27T16:30:00.000Z",
+            status: "missing",
+            missingReason: "checkpoint_resolution_no_checkpoint_in_time_range",
+          },
+          {
+            start: "2026-06-27T16:30:00.000Z",
+            end: "2026-06-27T16:40:00.000Z",
+            status: "empty",
+          },
+          {
+            start: "2026-06-27T16:40:00.000Z",
+            end: "2026-06-27T16:50:00.000Z",
+            status: "filled",
+          },
+        ],
+      })}\n`,
+    );
+
+    const workflow = {
+      schemaVersion: 1,
+      barIntervalMinutes: 10,
+      updatedAt: "2026-06-27T17:00:00.000Z",
+      pairs: {},
+    };
+    const [summary] = await reconcileWorkflowWithData({
+      pairs: [suiUsdc],
+      workflow,
+      dataRoot: root,
+    });
+
+    assert.equal(summary.changed, true);
+    assert.equal(
+      workflow.pairs.SUI_USDC.live.firstCoveredBucketStart,
+      "2026-06-27T16:30:00.000Z",
+    );
+    assert.equal(
+      workflow.pairs.SUI_USDC.live.lastQueuedBucketStart,
+      "2026-06-27T16:40:00.000Z",
+    );
+    assert.equal(
+      workflow.pairs.SUI_USDC.live.lastCoveredBucketStart,
+      "2026-06-27T16:40:00.000Z",
+    );
+    assert.equal(workflow.pairs.SUI_USDC.live.lastCoveredCheckpoint, null);
+    assert.equal(workflow.pairs.SUI_USDC.backfill.status, "not_started");
+    assert.equal(
+      workflow.pairs.SUI_USDC.backfill.oldestCoveredBucketStart,
+      "2026-06-27T16:30:00.000Z",
+    );
+    assert.equal(
+      workflow.pairs.SUI_USDC.missingBuckets[0].reason,
+      "checkpoint_resolution_no_checkpoint_in_time_range",
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("coverage audit fails when local data has no workflow source of truth", async () => {
+  const root = await mkdtemp(join(tmpdir(), "deepbook-audit-sot-"));
+  try {
+    const directory = join(root, "SUI_USDC", "bars", "2026");
+    await mkdir(directory, { recursive: true });
+    await writeFile(
+      join(directory, "W26.json"),
+      `${JSON.stringify({
+        bars: [
+          {
+            start: "2026-06-27T16:30:00.000Z",
+            end: "2026-06-27T16:40:00.000Z",
+            status: "empty",
+          },
+        ],
+      })}\n`,
+    );
+
+    const result = await auditGeneratedCoverage({
+      pairs: [{ id: "SUI_USDC" }],
+      workflow: { pairs: {} },
+      dataRoot: root,
+      scanTempFiles: false,
+    });
+
+    assert.equal(result.ok, false);
+    assert.deepEqual(
+      result.issues.map((issue) => issue.type),
+      ["data_without_workflow_state"],
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("coverage audit fails when workflow coverage does not include local data", async () => {
+  const root = await mkdtemp(join(tmpdir(), "deepbook-audit-range-"));
+  try {
+    const directory = join(root, "SUI_USDC", "bars", "2026");
+    await mkdir(directory, { recursive: true });
+    await writeFile(
+      join(directory, "W26.json"),
+      `${JSON.stringify({
+        bars: [
+          {
+            start: "2026-06-27T16:30:00.000Z",
+            end: "2026-06-27T16:40:00.000Z",
+            status: "empty",
+          },
+          {
+            start: "2026-06-27T16:40:00.000Z",
+            end: "2026-06-27T16:50:00.000Z",
+            status: "empty",
+          },
+        ],
+      })}\n`,
+    );
+    const state = initialPairWorkflowState();
+    state.live.firstCoveredBucketStart = "2026-06-27T16:30:00.000Z";
+    state.live.lastQueuedBucketStart = "2026-06-27T16:30:00.000Z";
+    state.live.lastCoveredBucketStart = "2026-06-27T16:30:00.000Z";
+
+    const result = await auditGeneratedCoverage({
+      pairs: [{ id: "SUI_USDC" }],
+      workflow: { pairs: { SUI_USDC: state } },
+      dataRoot: root,
+      scanTempFiles: false,
+    });
+
+    assert.equal(result.ok, false);
+    assert.equal(
+      result.issues.some(
+        (issue) => issue.type === "data_after_workflow_coverage",
+      ),
+      true,
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("backfill window steps backward from the live anchor", () => {
   const window = backfillWindowFromAnchor(
     [
@@ -692,4 +922,155 @@ test("covered range writer emits empty 10-minute buckets between filled buckets"
   assert.equal(results[1].status, "empty");
   assert.deepEqual(Object.keys(results[0]).sort(), ["records", "status"]);
   assert.deepEqual(Object.keys(results[1]).sort(), ["records", "status"]);
+});
+
+test("retention prunes old weekly bars and advances workflow coverage", async () => {
+  const root = await mkdtemp(join(tmpdir(), "deepbook-retention-"));
+  try {
+    const pair = {
+      ...suiUsdc,
+      collection: { ...suiUsdc.collection, rollingRetentionYears: 2 },
+    };
+    const oldDirectory = join(root, "SUI_USDC", "bars", "2023");
+    const keptDirectory = join(root, "SUI_USDC", "bars", "2024");
+    await mkdir(oldDirectory, { recursive: true });
+    await mkdir(keptDirectory, { recursive: true });
+    const oldFile = join(oldDirectory, "W52.json");
+    const keptFile = join(keptDirectory, "W26.json");
+    const bar = (start, end) => ({
+      start,
+      end,
+      status: "empty",
+      eventCount: 0,
+      open: null,
+      high: null,
+      low: null,
+      close: null,
+      baseVolumeAtomic: "0",
+      quoteVolumeAtomic: "0",
+    });
+    await writeFile(
+      oldFile,
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          pairId: "SUI_USDC",
+          week: {
+            weekYear: 2023,
+            week: 52,
+            startsAt: "2023-12-25T00:00:00.000Z",
+            endsAt: "2024-01-01T00:00:00.000Z",
+            timeZone: "UTC",
+          },
+          barIntervalMinutes: 10,
+          priceConvention: "USDC_PER_BASE",
+          disclaimer: registry.quoteAsset.disclaimer,
+          bars: [bar("2023-12-25T00:00:00.000Z", "2023-12-25T00:10:00.000Z")],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(
+      keptFile,
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          pairId: "SUI_USDC",
+          week: {
+            weekYear: 2024,
+            week: 26,
+            startsAt: "2024-06-24T00:00:00.000Z",
+            endsAt: "2024-07-01T00:00:00.000Z",
+            timeZone: "UTC",
+          },
+          barIntervalMinutes: 10,
+          priceConvention: "USDC_PER_BASE",
+          disclaimer: registry.quoteAsset.disclaimer,
+          bars: [
+            bar("2024-06-27T16:40:00.000Z", "2024-06-27T16:50:00.000Z"),
+            bar("2024-06-27T16:50:00.000Z", "2024-06-27T17:00:00.000Z"),
+            bar("2024-06-27T17:00:00.000Z", "2024-06-27T17:10:00.000Z"),
+          ],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+
+    const workflow = {
+      pairs: {
+        SUI_USDC: {
+          live: {
+            firstCoveredBucketStart: "2024-06-27T16:40:00.000Z",
+            lastQueuedBucketStart: "2024-06-27T17:00:00.000Z",
+            lastCoveredBucketStart: "2024-06-27T17:00:00.000Z",
+            lastCoveredCheckpoint: "12",
+          },
+          backfill: {
+            status: "running",
+            oldestCoveredBucketStart: "2023-12-25T00:00:00.000Z",
+            oldestCoveredCheckpoint: "1",
+            cursor: null,
+            stoppedReason: null,
+          },
+          missingBuckets: [
+            {
+              start: "2024-06-27T16:40:00.000Z",
+              end: "2024-06-27T16:50:00.000Z",
+              reason: "temporary_graphql_error",
+              attempts: 1,
+              lastAttemptedAt: "2026-06-27T17:00:00.000Z",
+            },
+            {
+              start: "2024-06-27T17:00:00.000Z",
+              end: "2024-06-27T17:10:00.000Z",
+              reason: "temporary_graphql_error",
+              attempts: 1,
+              lastAttemptedAt: "2026-06-27T17:00:00.000Z",
+            },
+          ],
+        },
+      },
+    };
+
+    assert.equal(
+      retentionCutoffStart("2026-06-27T16:50:00.000Z", 2),
+      "2024-06-27T16:50:00.000Z",
+    );
+    const [summary] = await enforceDataRetention({
+      pairs: [pair],
+      workflow,
+      referenceIso: "2026-06-27T16:50:00.000Z",
+      dataRoot: root,
+    });
+
+    assert.equal(summary.deletedFiles, 1);
+    assert.equal(summary.trimmedBars, 2);
+    assert.equal(summary.oldestRetainedBucketStart, "2024-06-27T16:50:00.000Z");
+    assert.equal(
+      workflow.pairs.SUI_USDC.live.firstCoveredBucketStart,
+      "2024-06-27T16:50:00.000Z",
+    );
+    assert.equal(
+      workflow.pairs.SUI_USDC.backfill.oldestCoveredBucketStart,
+      "2024-06-27T16:50:00.000Z",
+    );
+    assert.equal(
+      workflow.pairs.SUI_USDC.backfill.oldestCoveredCheckpoint,
+      null,
+    );
+    assert.deepEqual(
+      workflow.pairs.SUI_USDC.missingBuckets.map((bucket) => bucket.start),
+      ["2024-06-27T17:00:00.000Z"],
+    );
+    await assert.rejects(() => readFile(oldFile, "utf8"), { code: "ENOENT" });
+    const retained = JSON.parse(await readFile(keptFile, "utf8"));
+    assert.deepEqual(
+      retained.bars.map((item) => item.start),
+      ["2024-06-27T16:50:00.000Z", "2024-06-27T17:00:00.000Z"],
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });

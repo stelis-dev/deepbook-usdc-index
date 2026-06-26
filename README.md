@@ -13,6 +13,14 @@ Public files:
 
 `USDC` in this repository means the Sui mainnet Circle USDC coin type pinned in `registry/pairs.json`. It is not fiat USD and is not a USDC/USD peg guarantee.
 
+## Source Of Truth
+
+- Pair configuration: `registry/pairs.json`
+- Public candle data: `data/<PAIR>/bars/<ISO_WEEK_YEAR>/W<ISO_WEEK>.json`
+- Collection workflow state: `_workflow/missing.json`
+
+If workflow state is missing or stale, it can be reconciled from local candle files. Reconciliation does not recreate checkpoint metadata that is not stored in public candle files; later collection runs refresh checkpoint fields.
+
 ## Pair Registry Format
 
 `registry/pairs.json` is the source of truth for which DeepBook pools this repository indexes. To add a pair, append one object to `pairs`:
@@ -45,7 +53,7 @@ Field rules:
 - `quoteAsset`: must be `USDC`. This repository does not silently choose another quote asset.
 - `priceConvention`: must be `USDC_PER_BASE`, meaning the candle prices are denominated in USDC units per one base token.
 - `collection.barIntervalMinutes`: fixed at `10`; public files are UTC 10-minute candles.
-- `collection.rollingRetentionYears`: retention policy value for generated files.
+- `collection.rollingRetentionYears`: generated weekly candles older than this rolling window are pruned after collection or backfill runs.
 
 The top-level `quoteAsset` pins canonical Circle USDC on Sui mainnet. Do not add WUSDC, USDT, DBUSDC, or fiat USD as this repository's quote asset.
 

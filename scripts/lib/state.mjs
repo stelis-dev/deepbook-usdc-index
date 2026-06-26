@@ -79,6 +79,18 @@ export function clearMissingBucket(pairState, startIso) {
   );
 }
 
+export function clearMissingBucketsBetween(
+  pairState,
+  startIso,
+  endExclusiveIso,
+) {
+  pairState.missingBuckets = pairState.missingBuckets.filter(
+    (bucket) =>
+      compareIso(bucket.start, startIso) < 0 ||
+      compareIso(bucket.start, endExclusiveIso) >= 0,
+  );
+}
+
 export function advanceLiveQueuedBucket(pairState, startIso) {
   if (
     !pairState.live.lastQueuedBucketStart ||

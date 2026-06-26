@@ -14,6 +14,8 @@
     "lint": "eslint .",
     "test": "node --test",
     "audit:gaps": "node scripts/audit-gaps.mjs",
+    "reconcile:workflow": "node scripts/reconcile-workflow.mjs",
+    "retention": "node scripts/retention.mjs",
     "validate:registry": "node scripts/validate-registry.mjs",
     "check": "npm run format:check && npm run lint && npm test"
   },
