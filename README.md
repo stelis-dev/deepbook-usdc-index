@@ -1,8 +1,8 @@
 # DeepBook USDC Index
 
-Public DeepBook fill index for selected Sui mainnet pools quoted against canonical Circle USDC.
+Public DeepBook candle index for selected Sui mainnet pools quoted against canonical Circle USDC.
 
-This repository is a data index, not a trading service. It records observed DeepBook `OrderFilled` events and derived 10-minute UTC candles for registered pools. It does not choose routes, rank venues, provide best-price advice, compute P&L, provide tax or cost-basis output, or treat USDC as fiat USD.
+This repository is a data index, not a trading service. It records 10-minute UTC candles derived from observed DeepBook `OrderFilled` events for registered pools. It does not choose routes, rank venues, provide best-price advice, compute P&L, provide tax or cost-basis output, or treat USDC as fiat USD.
 
 ## What This Repository Stores
 
@@ -10,6 +10,8 @@ Public files:
 
 - Pair registry: `registry/pairs.json`
 - Weekly 10-minute candles: `data/<PAIR>/bars/<ISO_WEEK_YEAR>/W<ISO_WEEK>.json`
+
+The public data schema is bars-only: one registry file plus weekly 10-minute candle files.
 
 `USDC` in this repository means the Sui mainnet Circle USDC coin type pinned in `registry/pairs.json`. It is not fiat USD and is not a USDC/USD peg guarantee.
 
