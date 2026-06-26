@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "pairId": "USDSUI_USDC",
+  "week": {
+    "weekYear": 2026,
+    "week": 26,
+    "startsAt": "2026-06-22T00:00:00.000Z",
+    "endsAt": "2026-06-29T00:00:00.000Z",
+    "timeZone": "UTC"
+  },
+  "barIntervalMinutes": 10,
+  "priceConvention": "USDC_PER_BASE",
+  "disclaimer": "USDC is a token-denominated reference asset in this index. It is not fiat USD and this repository does not guarantee a USDC/USD peg.",
+  "bars": [
+    {
+      "start": "2026-06-26T19:40:00.000Z",
+      "end": "2026-06-26T19:50:00.000Z",
+      "status": "filled",
+      "eventCount": 17,
+      "open": "0.999680983877",
+      "high": "0.999734994285",
+      "low": "0.999249999198",
+      "close": "0.999675",
+      "baseVolumeAtomic": "1839260000",
+      "quoteVolumeAtomic": "1838083895"
+    },
+    {
+      "start": "2026-06-26T19:50:00.000Z",
+      "end": "2026-06-26T20:00:00.000Z",
+      "status": "filled",
+      "eventCount": 39,
+      "open": "0.999674977843",
+      "high": "0.999737986743",
+      "low": "0.99924990689",
+      "close": "0.999522984108",
+      "baseVolumeAtomic": "8907820000",
+      "quoteVolumeAtomic": "8901301472"
+    },
+    {
+      "start": "2026-06-26T20:00:00.000Z",
+      "end": "2026-06-26T20:10:00.000Z",
+      "status": "filled",
+      "eventCount": 20,
+      "open": "0.999249693251",
+      "high": "0.99969898399",
+      "low": "0.999233333333",
+      "close": "0.999559983831",
+      "baseVolumeAtomic": "2198570000",
+      "quoteVolumeAtomic": "2197098839"
+    }
+  ]
+}
