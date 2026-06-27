@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "pairId": "WAL_USDC",
+  "week": {
+    "weekYear": 2026,
+    "week": 26,
+    "startsAt": "2026-06-22T00:00:00.000Z",
+    "endsAt": "2026-06-29T00:00:00.000Z",
+    "timeZone": "UTC"
+  },
+  "barIntervalMinutes": 5,
+  "priceConvention": "USDC_PER_BASE",
+  "disclaimer": "USDC is a token-denominated reference asset in this repository. It is not fiat USD and this repository does not guarantee a USDC/USD peg.",
+  "bars": [
+    {
+      "start": "2026-06-27T04:45:00.000Z",
+      "end": "2026-06-27T04:50:00.000Z",
+      "status": "filled",
+      "eventCount": 92,
+      "open": "0.032595996093",
+      "high": "0.032806",
+      "low": "0.03259",
+      "close": "0.032805999815",
+      "baseVolumeAtomic": "26067900000000",
+      "quoteVolumeAtomic": "852086021"
+    },
+    {
+      "start": "2026-06-27T04:50:00.000Z",
+      "end": "2026-06-27T04:55:00.000Z",
+      "status": "filled",
+      "eventCount": 18,
+      "open": "0.032795",
+      "high": "0.032795",
+      "low": "0.032702999122",
+      "close": "0.032754",
+      "baseVolumeAtomic": "14740400000000",
+      "quoteVolumeAtomic": "482511026"
+    },
+    {
+      "start": "2026-06-27T04:55:00.000Z",
+      "end": "2026-06-27T05:00:00.000Z",
+      "status": "filled",
+      "eventCount": 21,
+      "open": "0.032729",
+      "high": "0.032803",
+      "low": "0.032664996729",
+      "close": "0.032665998039",
+      "baseVolumeAtomic": "2324700000000",
+      "quoteVolumeAtomic": "76114986"
+    },
+    {
+      "start": "2026-06-27T05:00:00.000Z",
+      "end": "2026-06-27T05:05:00.000Z",
+      "status": "filled",
+      "eventCount": 9,
+      "open": "0.032629",
+      "high": "0.032795",
+      "low": "0.032629",
+      "close": "0.032772998687",
+      "baseVolumeAtomic": "4982900000000",
+      "quoteVolumeAtomic": "162974350"
+    },
+    {
+      "start": "2026-06-27T05:05:00.000Z",
+      "end": "2026-06-27T05:10:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-06-27T05:10:00.000Z",
+      "end": "2026-06-27T05:15:00.000Z",
+      "status": "filled",
+      "eventCount": 5,
+      "open": "0.032714",
+      "high": "0.032795",
+      "low": "0.032714",
+      "close": "0.032795",
+      "baseVolumeAtomic": "1072100000000",
+      "quoteVolumeAtomic": "35137431"
+    }
+  ]
+}
