@@ -11,7 +11,7 @@ export const DEFAULT_BACKFILL_MAX_TRANSACTION_PAGES_PER_WINDOW = 80;
 export const REPAIR_LIVE_LOOKBACK_HOUR_CHOICES = [6, 12, 18, 24];
 export const LIVE_RUN_MODES = ["collect", "repair"];
 export const USDC_DISCLAIMER =
-  "USDC is a token-denominated reference asset in this index. It is not fiat USD and this repository does not guarantee a USDC/USD peg.";
+  "USDC is a token-denominated reference asset in this repository. It is not fiat USD and this repository does not guarantee a USDC/USD peg.";
 
 export async function loadRegistry() {
   const registry = await readJson("registry/pairs.json");

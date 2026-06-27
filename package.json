@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Public DeepBook observed-fill index for selected Sui mainnet pools quoted in canonical USDC.",
+  "description": "Public DeepBook observed-fill backup for selected Sui mainnet pools quoted in canonical USDC.",
   "scripts": {
     "collect": "node scripts/collect.mjs",
     "backfill": "node scripts/backfill.mjs",

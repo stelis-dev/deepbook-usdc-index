@@ -1,8 +1,8 @@
-# DeepBook USDC Index
+# DeepBook USDC Backup
 
-Public DeepBook candle index for selected Sui mainnet pools quoted against canonical Circle USDC.
+Public backup of DeepBook candle data for selected Sui mainnet pools quoted against canonical Circle USDC.
 
-This repository is a data index, not a trading service. It records configured-interval UTC candles derived from observed DeepBook `OrderFilled` events for registered pools. It does not choose routes, rank venues, provide best-price advice, compute P&L, provide tax or cost-basis output, or treat USDC as fiat USD.
+This repository is a data backup, not a trading service or primary market-data API. It records configured-interval UTC candles derived from observed DeepBook `OrderFilled` events for registered pools so the selected history remains available as plain public files. It does not choose routes, rank venues, provide best-price advice, compute P&L, provide tax or cost-basis output, or treat USDC as fiat USD.
 
 ## What This Repository Stores
 
@@ -25,7 +25,7 @@ If workflow state is missing or stale, it can be reconciled from local candle fi
 
 ## Pair Registry Format
 
-`registry/pairs.json` is the source of truth for which DeepBook pools this repository indexes. To add a pair, append one object to `pairs`:
+`registry/pairs.json` is the source of truth for which DeepBook pools this repository backs up. To add a pair, append one object to `pairs`:
 
 ```json
 {
@@ -76,7 +76,7 @@ Weekly files use ISO-8601 UTC week-year and week number. Candle boundaries are a
 - `empty`: the bucket was scanned and no fills were observed; OHLC fields are `null` and volumes are zero.
 - `missing`: the bucket could not be completed; consumers should treat it as unavailable unless a later file version replaces it.
 
-A consumer that wants a date range should compute every UTC ISO week touched by that range, fetch those weekly files, and filter the `bars` array by `start` and `end`. Direct file URLs cannot list directories. GitHub's REST Contents and Git Trees APIs can list repository paths, but this index is designed so normal readers do not need those APIs.
+A consumer that wants a date range should compute every UTC ISO week touched by that range, fetch those weekly files, and filter the `bars` array by `start` and `end`. Direct file URLs cannot list directories. GitHub's REST Contents and Git Trees APIs can list repository paths, but this backup is designed so normal readers do not need those APIs.
 
 ### TypeScript Read Example
 
@@ -176,7 +176,7 @@ function utcDateFloor(iso: string) {
 
 ## Data Meaning
 
-Weekly candle files contain observed DeepBook fills for the currently registered pool object. If a market used an older pool object before the current one, that older object must be registered separately before this repository can index that earlier period.
+Weekly candle files contain observed DeepBook fills for the currently registered pool object. If a market used an older pool object before the current one, that older object must be registered separately before this repository can back up that earlier period.
 
 Candle calculation is chronological inside each interval bucket: `open` is the earliest fill in the bucket, `close` is the latest fill in the bucket, `high` and `low` are extrema over the bucket, and volume fields are sums.
 
