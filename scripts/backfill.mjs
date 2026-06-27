@@ -16,11 +16,10 @@ import {
 import {
   availableTransactionRange,
   firstPoolTransaction,
-  scanPoolTransactionsForCheckpointRange,
 } from "./lib/events.mjs";
 import {
   backfillAnchorForPairState,
-  backfillChunkStart,
+  scanBackfillChunk,
 } from "./lib/backfill.mjs";
 import { writeCoveredBucketRange } from "./lib/buckets.mjs";
 import {
@@ -61,6 +60,9 @@ const maxTransactionPages = backfillMaxTransactionPagesFromEnv();
 const transactionPageSize = Number(
   process.env.GRAPHQL_TRANSACTION_PAGE_SIZE ?? 50,
 );
+const eventPageSize = Number(process.env.GRAPHQL_EVENT_PAGE_SIZE ?? 50);
+const maxEventPages = Number(process.env.MAX_GRAPHQL_PAGES ?? 100);
+const maxFillRecords = Number(process.env.MAX_FILL_RECORDS ?? 10000);
 const grpcClient = createGrpcClient();
 const transactionRange = await availableTransactionRange();
 const grpcRange = await grpcCheckpointRange(grpcClient);
@@ -152,6 +154,9 @@ for (const pair of pairs) {
     lookbackHours,
     pageSize: transactionPageSize,
     maxPages: maxTransactionPages,
+    eventPageSize,
+    maxEventPages,
+    maxFillRecords,
     resolveBackfillCheckpointRange,
   });
 
@@ -168,11 +173,9 @@ for (const pair of pairs) {
   if (chunk.status === "too_dense") {
     if (writeGeneratedData) {
       pairState.backfill.status = "stopped";
-      pairState.backfill.stoppedReason = `pool_transaction_scan_exceeded_bounds:${chunk.reason}`;
+      pairState.backfill.stoppedReason = chunk.reason;
     }
-    console.log(
-      `${pair.id}: stopped backfill because a 10-minute window exceeded transaction scan bounds`,
-    );
+    console.log(`${pair.id}: stopped backfill because ${chunk.reason}`);
     continue;
   }
 
@@ -196,8 +199,12 @@ for (const pair of pairs) {
   }
   const oldest = oldestByCheckpoint(chunk.page.transactions);
   const newest = newestByCheckpoint(chunk.page.transactions);
+  const scanDescription =
+    chunk.page.scanSource === "order_filled_events"
+      ? `${chunk.page.pageCount} OrderFilled event pages`
+      : `${chunk.page.transactions.length} pool transactions`;
   console.log(
-    `${pair.id}: ${writeGeneratedData ? "backfilled" : "would backfill"} ${records.length} fill events from ${chunk.page.transactions.length} pool transactions for ${chunk.startIso}..${anchor}${oldest && newest ? ` (${oldest.timestamp}..${newest.timestamp})` : ""}`,
+    `${pair.id}: ${writeGeneratedData ? "backfilled" : "would backfill"} ${records.length} fill events from ${scanDescription} for ${chunk.startIso}..${anchor}${oldest && newest ? ` (${oldest.timestamp}..${newest.timestamp})` : ""}`,
   );
 }
 
@@ -237,75 +244,6 @@ function newestByCheckpoint(transactions) {
           ? 1
           : 0,
     )[0] ?? null
-  );
-}
-
-async function scanBackfillChunk(input) {
-  let candidateStart = backfillChunkStart(
-    input.anchor,
-    input.firstBucketStart,
-    input.lookbackHours,
-  );
-
-  while (true) {
-    const resolved = await input.resolveBackfillCheckpointRange({
-      startIso: candidateStart,
-      endIso: input.anchor,
-    });
-    if (resolved.status !== "ok") {
-      return {
-        status: "unavailable",
-        reason: `checkpoint_range_${resolved.reason}`,
-      };
-    }
-
-    const page = await scanPoolTransactionsForCheckpointRange({
-      pair: input.pair,
-      eventTypes: input.eventTypes,
-      poolId: input.pair.poolId,
-      fromCheckpoint: resolved.fromCheckpoint,
-      toCheckpoint: resolved.toCheckpoint,
-      pageSize: input.pageSize,
-      maxPages: input.maxPages,
-    });
-    if (!page.hasMore) {
-      return {
-        status: "ok",
-        startIso: candidateStart,
-        resolved,
-        page,
-      };
-    }
-
-    const bucketCount = bucketCountBetween(candidateStart, input.anchor);
-    if (bucketCount <= 1) {
-      return {
-        status: "too_dense",
-        reason: page.stoppedReason,
-      };
-    }
-
-    const nextBucketCount = Math.max(1, Math.floor(bucketCount / 2));
-    const requestedStart = backfillChunkStart(
-      input.anchor,
-      input.firstBucketStart,
-      (nextBucketCount * BAR_INTERVAL_MINUTES) / 60,
-    );
-    if (requestedStart === candidateStart) {
-      return {
-        status: "too_dense",
-        reason: page.stoppedReason,
-      };
-    }
-    candidateStart = requestedStart;
-  }
-}
-
-function bucketCountBetween(startIso, endIso) {
-  const intervalMs = BAR_INTERVAL_MINUTES * 60_000;
-  return Math.max(
-    0,
-    Math.round((Date.parse(endIso) - Date.parse(startIso)) / intervalMs),
   );
 }
 

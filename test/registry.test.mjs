@@ -14,6 +14,7 @@ import { createBucketCheckpointRangeResolver } from "../scripts/lib/checkpoints.
 import {
   backfillAnchorForPairState,
   backfillChunkStart,
+  scanBackfillChunk,
   backfillWindowFromAnchor,
 } from "../scripts/lib/backfill.mjs";
 import { auditGeneratedCoverage } from "../scripts/lib/audit.mjs";
@@ -39,6 +40,16 @@ import { reconcileWorkflowWithData } from "../scripts/lib/reconcile.mjs";
 
 const registry = JSON.parse(await readFile("registry/pairs.json", "utf8"));
 const suiUsdc = registry.pairs.find((pair) => pair.id === "SUI_USDC");
+
+function assertWorkflowUsesFreshBranchPush(workflow) {
+  assert.match(workflow, /name: Sync latest branch/);
+  assert.match(
+    workflow,
+    /git checkout -B \$\{\{ github\.ref_name \}\} origin\/\$\{\{ github\.ref_name \}\}/,
+  );
+  assert.match(workflow, /git push \|\| \(/);
+  assert.match(workflow, /git rebase origin\/\$\{\{ github\.ref_name \}\}/);
+}
 
 test("registry pins canonical USDC and does not describe USD", () => {
   assert.equal(registry.network, "sui:mainnet");
@@ -113,6 +124,7 @@ test("backfill workflow is scheduled, manually dispatchable, and not transaction
   assert.match(workflow, /actions\/checkout@v7/);
   assert.match(workflow, /actions\/setup-node@v6/);
   assert.match(workflow, /npm run audit:gaps/);
+  assertWorkflowUsesFreshBranchPush(workflow);
   assert.doesNotMatch(workflow, /actions\/(?:checkout|setup-node)@v4/);
   assert.doesNotMatch(workflow, /max-transactions|BACKFILL_MAX_TRANSACTIONS/);
 });
@@ -126,6 +138,7 @@ test("collect workflow schedules live collection without repair inputs", async (
   assert.match(workflow, /actions\/setup-node@v6/);
   assert.match(workflow, /npm run collect/);
   assert.match(workflow, /npm run audit:gaps/);
+  assertWorkflowUsesFreshBranchPush(workflow);
   assert.doesNotMatch(workflow, /cron: "47 3 \* \* \*"/);
   assert.doesNotMatch(workflow, /actions\/(?:checkout|setup-node)@v4/);
   assert.doesNotMatch(
@@ -150,6 +163,7 @@ test("repair workflow runs anchored live repair in 6-hour units", async () => {
   assert.match(workflow, /actions\/setup-node@v6/);
   assert.match(workflow, /npm run collect/);
   assert.match(workflow, /npm run audit:gaps/);
+  assertWorkflowUsesFreshBranchPush(workflow);
   assert.doesNotMatch(workflow, /actions\/(?:checkout|setup-node)@v4/);
   assert.doesNotMatch(workflow, /github\.event\.inputs|--pair|pair_id/);
 });
@@ -630,6 +644,70 @@ test("backfill covered range clears tracked missing buckets in that range", () =
     state.missingBuckets.map((bucket) => bucket.start),
     ["2026-06-27T16:20:00.000Z", "2026-06-27T16:50:00.000Z"],
   );
+});
+
+test("backfill falls back to OrderFilled event scan for dense 10-minute windows", async () => {
+  const chunk = await scanBackfillChunk({
+    pair: suiUsdc,
+    eventTypes: registry.eventSources.orderFilledEventTypes,
+    anchor: "2026-06-27T16:50:00.000Z",
+    firstBucketStart: "2026-06-27T16:40:00.000Z",
+    lookbackHours: 1,
+    pageSize: 50,
+    maxPages: 1,
+    eventPageSize: 50,
+    maxEventPages: 10,
+    maxFillRecords: 10000,
+    resolveBackfillCheckpointRange: async ({ startIso, endIso }) => {
+      assert.equal(startIso, "2026-06-27T16:40:00.000Z");
+      assert.equal(endIso, "2026-06-27T16:50:00.000Z");
+      return {
+        status: "ok",
+        fromCheckpoint: "100",
+        toCheckpoint: "110",
+      };
+    },
+    scanPoolTransactionsForCheckpointRange: async () => ({
+      records: [],
+      transactions: [],
+      hasMore: true,
+      cursor: "pool-cursor",
+      pageCount: 2,
+      stoppedReason: "max_pages",
+    }),
+    scanOrderFilledEventsForCheckpointRange: async (input) => {
+      assert.equal(
+        input.eventType,
+        registry.eventSources.orderFilledEventTypes[0],
+      );
+      assert.equal(input.poolId, suiUsdc.poolId);
+      assert.equal(input.fromCheckpoint, "100");
+      assert.equal(input.toCheckpoint, "110");
+      return {
+        records: [
+          {
+            timestamp: "2026-06-27T16:41:00.000Z",
+            checkpoint: "101",
+            eventSequenceNumber: "1",
+          },
+        ],
+        hasMore: false,
+        cursor: null,
+        pageCount: 1,
+        stoppedReason: null,
+      };
+    },
+  });
+
+  assert.equal(chunk.status, "ok");
+  assert.equal(chunk.startIso, "2026-06-27T16:40:00.000Z");
+  assert.equal(chunk.page.scanSource, "order_filled_events");
+  assert.equal(
+    chunk.page.fallbackReason,
+    "pool_transaction_scan_exceeded_bounds:max_pages",
+  );
+  assert.equal(chunk.page.records.length, 1);
+  assert.deepEqual(chunk.page.transactions, []);
 });
 
 test("resolved local bars are removed from missing workflow state without rereading chain data", async () => {
