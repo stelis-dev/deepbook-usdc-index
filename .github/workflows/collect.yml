@@ -35,7 +35,7 @@ jobs:
           SUI_GRPC_URL: https://fullnode.mainnet.sui.io:443
           SUI_GRAPHQL_URL: https://graphql.mainnet.sui.io/graphql
           LIVE_RUN_MODE: collect
-          COLLECT_MAX_BUCKETS_PER_RUN: "12"
+          COLLECT_MAX_BUCKETS_PER_RUN: "24"
           COLLECT_INITIAL_LOOKBACK_MINUTES: "30"
       - run: npm run audit:gaps
       - name: Commit generated data

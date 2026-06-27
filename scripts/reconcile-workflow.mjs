@@ -1,4 +1,5 @@
 import {
+  barIntervalMinutesFromPairs,
   enabledPairs,
   loadRegistry,
   parseArgs,
@@ -16,7 +17,9 @@ const registry = await loadRegistry();
 const writeGeneratedData = shouldWriteGeneratedData(args);
 console.log(`mode: ${writeModeLabel(writeGeneratedData)}`);
 const pairs = enabledPairs(registry, args.pair);
-const workflow = await loadWorkflowState();
+const barIntervalMinutes = barIntervalMinutesFromPairs(pairs);
+console.log(`bar-interval-minutes: ${barIntervalMinutes}`);
+const workflow = await loadWorkflowState(barIntervalMinutes);
 
 const summaries = await reconcileWorkflowWithData({
   pairs,

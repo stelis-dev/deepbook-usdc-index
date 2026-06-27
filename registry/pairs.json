@@ -28,7 +28,7 @@
       "quoteAsset": "USDC",
       "priceConvention": "USDC_PER_BASE",
       "collection": {
-        "barIntervalMinutes": 10,
+        "barIntervalMinutes": 5,
         "rollingRetentionYears": 2
       }
     },
@@ -44,7 +44,7 @@
       "quoteAsset": "USDC",
       "priceConvention": "USDC_PER_BASE",
       "collection": {
-        "barIntervalMinutes": 10,
+        "barIntervalMinutes": 5,
         "rollingRetentionYears": 2
       }
     },
@@ -60,7 +60,7 @@
       "quoteAsset": "USDC",
       "priceConvention": "USDC_PER_BASE",
       "collection": {
-        "barIntervalMinutes": 10,
+        "barIntervalMinutes": 5,
         "rollingRetentionYears": 2
       }
     },
@@ -76,87 +76,7 @@
       "quoteAsset": "USDC",
       "priceConvention": "USDC_PER_BASE",
       "collection": {
-        "barIntervalMinutes": 10,
-        "rollingRetentionYears": 2
-      }
-    },
-    {
-      "id": "WUSDT_USDC",
-      "enabled": true,
-      "poolId": "0x4e2ca3988246e1d50b9bf209abb9c1cbfec65bd95afdacc620a36c67bdb8452f",
-      "baseAsset": {
-        "symbol": "WUSDT",
-        "coinType": "0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN",
-        "decimals": 6
-      },
-      "quoteAsset": "USDC",
-      "priceConvention": "USDC_PER_BASE",
-      "collection": {
-        "barIntervalMinutes": 10,
-        "rollingRetentionYears": 2
-      }
-    },
-    {
-      "id": "WUSDC_USDC",
-      "enabled": true,
-      "poolId": "0xa0b9ebefb38c963fd115f52d71fa64501b79d1adcb5270563f92ce0442376545",
-      "baseAsset": {
-        "symbol": "WUSDC",
-        "coinType": "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
-        "decimals": 6
-      },
-      "quoteAsset": "USDC",
-      "priceConvention": "USDC_PER_BASE",
-      "collection": {
-        "barIntervalMinutes": 10,
-        "rollingRetentionYears": 2
-      }
-    },
-    {
-      "id": "AUSD_USDC",
-      "enabled": true,
-      "poolId": "0x5661fc7f88fbeb8cb881150a810758cf13700bb4e1f31274a244581b37c303c3",
-      "baseAsset": {
-        "symbol": "AUSD",
-        "coinType": "0x2053d08c1e2bd02791056171aab0fd12bd7cd7efad2ab8f6b9c8902f14df2ff2::ausd::AUSD",
-        "decimals": 6
-      },
-      "quoteAsset": "USDC",
-      "priceConvention": "USDC_PER_BASE",
-      "collection": {
-        "barIntervalMinutes": 10,
-        "rollingRetentionYears": 2
-      }
-    },
-    {
-      "id": "USDT_USDC",
-      "enabled": true,
-      "poolId": "0xfc28a2fb22579c16d672a1152039cbf671e5f4b9f103feddff4ea06ef3c2bc25",
-      "baseAsset": {
-        "symbol": "USDT",
-        "coinType": "0x375f70cf2ae4c00bf37117d0c85a2c71545e6ee05c4a5c7d282cd66a4504b068::usdt::USDT",
-        "decimals": 6
-      },
-      "quoteAsset": "USDC",
-      "priceConvention": "USDC_PER_BASE",
-      "collection": {
-        "barIntervalMinutes": 10,
-        "rollingRetentionYears": 2
-      }
-    },
-    {
-      "id": "SUIUSDE_USDC",
-      "enabled": true,
-      "poolId": "0x0fac1cebf35bde899cd9ecdd4371e0e33f44ba83b8a2902d69186646afa3a94b",
-      "baseAsset": {
-        "symbol": "SUIUSDE",
-        "coinType": "0x41d587e5336f1c86cad50d38a7136db99333bb9bda91cea4ba69115defeb1402::sui_usde::SUI_USDE",
-        "decimals": 6
-      },
-      "quoteAsset": "USDC",
-      "priceConvention": "USDC_PER_BASE",
-      "collection": {
-        "barIntervalMinutes": 10,
+        "barIntervalMinutes": 5,
         "rollingRetentionYears": 2
       }
     },
@@ -172,7 +92,7 @@
       "quoteAsset": "USDC",
       "priceConvention": "USDC_PER_BASE",
       "collection": {
-        "barIntervalMinutes": 10,
+        "barIntervalMinutes": 5,
         "rollingRetentionYears": 2
       }
     }

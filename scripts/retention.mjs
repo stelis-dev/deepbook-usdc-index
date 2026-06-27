@@ -1,11 +1,12 @@
 import {
+  barIntervalMinutesFromPairs,
   enabledPairs,
   loadRegistry,
   parseArgs,
   shouldWriteGeneratedData,
   writeModeLabel,
 } from "./lib/config.mjs";
-import { BAR_INTERVAL_MINUTES, latestClosedBucketStart } from "./lib/paths.mjs";
+import { latestClosedBucketStart } from "./lib/paths.mjs";
 import { loadWorkflowState, saveWorkflowState } from "./lib/state.mjs";
 import {
   enforceDataRetention,
@@ -17,10 +18,12 @@ const registry = await loadRegistry();
 const writeGeneratedData = shouldWriteGeneratedData(args);
 console.log(`mode: ${writeModeLabel(writeGeneratedData)}`);
 const pairs = enabledPairs(registry, args.pair);
-const workflow = await loadWorkflowState();
+const barIntervalMinutes = barIntervalMinutesFromPairs(pairs);
+console.log(`bar-interval-minutes: ${barIntervalMinutes}`);
+const workflow = await loadWorkflowState(barIntervalMinutes);
 const latestClosedStart = latestClosedBucketStart(
   new Date(),
-  BAR_INTERVAL_MINUTES,
+  barIntervalMinutes,
 );
 
 const summaries = await enforceDataRetention({
@@ -28,6 +31,7 @@ const summaries = await enforceDataRetention({
   workflow,
   referenceIso: latestClosedStart,
   writeGeneratedData,
+  barIntervalMinutes,
 });
 
 for (const summary of summaries) {

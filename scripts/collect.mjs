@@ -1,4 +1,5 @@
 import {
+  barIntervalMinutesFromPairs,
   collectInitialLookbackMinutesFromEnv,
   collectMaxBucketsFromEnv,
   enabledPairs,
@@ -13,7 +14,7 @@ import {
   createLiveCollectionContext,
   runLiveBucketJob,
 } from "./lib/live-runner.mjs";
-import { BAR_INTERVAL_MINUTES, latestClosedBucketStart } from "./lib/paths.mjs";
+import { latestClosedBucketStart } from "./lib/paths.mjs";
 import {
   liveRepairBucketStarts,
   nextLiveBucketStarts,
@@ -44,12 +45,14 @@ if (repairLookbackHours !== null) {
   console.log(`repair-lookback-hours: ${repairLookbackHours}`);
 }
 const pairs = enabledPairs(registry, args.pair);
-const workflow = await loadWorkflowState();
+const barIntervalMinutes = barIntervalMinutesFromPairs(pairs);
+console.log(`bar-interval-minutes: ${barIntervalMinutes}`);
+const workflow = await loadWorkflowState(barIntervalMinutes);
 const maxBuckets = collectMaxBucketsFromEnv();
 const initialLookbackMinutes = collectInitialLookbackMinutesFromEnv();
 const latestClosedStart = latestClosedBucketStart(
   new Date(),
-  BAR_INTERVAL_MINUTES,
+  barIntervalMinutes,
 );
 
 if (writeGeneratedData) {
@@ -87,6 +90,7 @@ await runLiveBucketJob({
         pairState,
         latestClosedStart,
         repairLookbackHours * 60,
+        barIntervalMinutes,
       );
     }
     return nextLiveBucketStarts(
@@ -94,14 +98,16 @@ await runLiveBucketJob({
       latestClosedStart,
       maxBuckets,
       initialLookbackMinutes,
+      barIntervalMinutes,
     );
   },
   emptyMessage:
     liveRunMode === "repair"
-      ? "no anchored closed 10-minute UTC buckets to repair"
-      : "no closed 10-minute UTC buckets to collect",
+      ? `no anchored closed ${barIntervalMinutes}-minute UTC buckets to repair`
+      : `no closed ${barIntervalMinutes}-minute UTC buckets to collect`,
   writeVerb: liveRunMode === "repair" ? "repaired" : "collected",
   dryRunVerb: liveRunMode === "repair" ? "would repair" : "would collect",
+  barIntervalMinutes,
 });
 
 if (writeGeneratedData) {
@@ -110,6 +116,7 @@ if (writeGeneratedData) {
     workflow,
     referenceIso: latestClosedStart,
     writeGeneratedData,
+    barIntervalMinutes,
   });
   for (const summary of retentionSummaries) {
     if (summary.deletedFiles > 0 || summary.trimmedBars > 0) {

@@ -1,5 +1,5 @@
 import { USDC_DISCLAIMER } from "./config.mjs";
-import { BAR_INTERVAL_MINUTES, utcIsoWeek } from "./paths.mjs";
+import { DEFAULT_BAR_INTERVAL_MINUTES, utcIsoWeek } from "./paths.mjs";
 
 export function buildBar(pair, fillRecords, input) {
   const records = sortForOhlc(fillRecords);
@@ -44,6 +44,16 @@ export function buildBar(pair, fillRecords, input) {
 
 export function mergeWeeklyBars(existing, pair, startIso, bar) {
   const week = utcIsoWeek(startIso);
+  const barIntervalMinutes =
+    pair.collection?.barIntervalMinutes ?? DEFAULT_BAR_INTERVAL_MINUTES;
+  if (
+    existing?.barIntervalMinutes !== undefined &&
+    existing.barIntervalMinutes !== barIntervalMinutes
+  ) {
+    throw new Error(
+      `${pair.id} ${startIso} week file uses ${existing.barIntervalMinutes}-minute bars but pair registry uses ${barIntervalMinutes}-minute bars`,
+    );
+  }
   const base = existing ?? {
     schemaVersion: 1,
     pairId: pair.id,
@@ -54,7 +64,7 @@ export function mergeWeeklyBars(existing, pair, startIso, bar) {
       endsAt: week.endsAt,
       timeZone: "UTC",
     },
-    barIntervalMinutes: BAR_INTERVAL_MINUTES,
+    barIntervalMinutes,
     priceConvention: "USDC_PER_BASE",
     disclaimer: USDC_DISCLAIMER,
     bars: [],

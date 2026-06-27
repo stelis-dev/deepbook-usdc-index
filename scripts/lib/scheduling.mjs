@@ -1,4 +1,8 @@
-import { BAR_INTERVAL_MINUTES, addMinutes, compareIso } from "./paths.mjs";
+import {
+  DEFAULT_BAR_INTERVAL_MINUTES,
+  addMinutes,
+  compareIso,
+} from "./paths.mjs";
 import { DEFAULT_COLLECT_INITIAL_LOOKBACK_MINUTES } from "./config.mjs";
 
 export const LIVE_REPAIR_LOOKBACK_MINUTES = 24 * 60;
@@ -8,16 +12,22 @@ export function nextLiveBucketStarts(
   latestStart,
   maxBuckets,
   initialLookbackMinutes = DEFAULT_COLLECT_INITIAL_LOOKBACK_MINUTES,
+  barIntervalMinutes = DEFAULT_BAR_INTERVAL_MINUTES,
 ) {
   const pendingLiveStarts = [];
   const start = pairState.live.lastQueuedBucketStart
-    ? addMinutes(pairState.live.lastQueuedBucketStart, BAR_INTERVAL_MINUTES)
-    : initialLiveBucketStart(latestStart, maxBuckets, initialLookbackMinutes);
+    ? addMinutes(pairState.live.lastQueuedBucketStart, barIntervalMinutes)
+    : initialLiveBucketStart(
+        latestStart,
+        maxBuckets,
+        initialLookbackMinutes,
+        barIntervalMinutes,
+      );
   for (
     let current = start;
     pendingLiveStarts.length < maxBuckets &&
     compareIso(current, latestStart) <= 0;
-    current = addMinutes(current, BAR_INTERVAL_MINUTES)
+    current = addMinutes(current, barIntervalMinutes)
   ) {
     pendingLiveStarts.push(current);
   }
@@ -43,6 +53,7 @@ export function liveRepairBucketStarts(
   pairState,
   latestStart,
   lookbackMinutes = LIVE_REPAIR_LOOKBACK_MINUTES,
+  barIntervalMinutes = DEFAULT_BAR_INTERVAL_MINUTES,
 ) {
   const anchor = pairState.live.firstCoveredBucketStart;
   if (!anchor) {
@@ -50,11 +61,11 @@ export function liveRepairBucketStarts(
   }
   const requestedBuckets = Math.max(
     1,
-    Math.ceil(lookbackMinutes / BAR_INTERVAL_MINUTES),
+    Math.ceil(lookbackMinutes / barIntervalMinutes),
   );
   const requestedStart = addMinutes(
     latestStart,
-    -BAR_INTERVAL_MINUTES * (requestedBuckets - 1),
+    -barIntervalMinutes * (requestedBuckets - 1),
   );
   const start =
     compareIso(requestedStart, anchor) < 0 ? anchor : requestedStart;
@@ -62,7 +73,7 @@ export function liveRepairBucketStarts(
   for (
     let current = start;
     compareIso(current, latestStart) <= 0;
-    current = addMinutes(current, BAR_INTERVAL_MINUTES)
+    current = addMinutes(current, barIntervalMinutes)
   ) {
     starts.push(current);
   }
@@ -73,11 +84,12 @@ function initialLiveBucketStart(
   latestStart,
   maxBuckets,
   initialLookbackMinutes,
+  barIntervalMinutes = DEFAULT_BAR_INTERVAL_MINUTES,
 ) {
   const requestedBuckets = Math.max(
     1,
-    Math.ceil(initialLookbackMinutes / BAR_INTERVAL_MINUTES),
+    Math.ceil(initialLookbackMinutes / barIntervalMinutes),
   );
   const bucketCount = Math.min(maxBuckets, requestedBuckets);
-  return addMinutes(latestStart, -BAR_INTERVAL_MINUTES * (bucketCount - 1));
+  return addMinutes(latestStart, -barIntervalMinutes * (bucketCount - 1));
 }

@@ -1,4 +1,5 @@
-export const BAR_INTERVAL_MINUTES = 10;
+export const DEFAULT_BAR_INTERVAL_MINUTES = 5;
+export const BAR_INTERVAL_MINUTES = DEFAULT_BAR_INTERVAL_MINUTES;
 
 export function barsWeekPath(pairId, startIso) {
   const week = utcIsoWeek(startIso);

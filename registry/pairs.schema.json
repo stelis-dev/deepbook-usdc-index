@@ -112,7 +112,11 @@
           "additionalProperties": false,
           "properties": {
             "barIntervalMinutes": {
-              "const": 10
+              "enum": [
+                1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 30, 32, 36,
+                40, 45, 48, 60, 72, 80, 90, 96, 120, 144, 160, 180, 240, 288,
+                360, 480, 720, 1440
+              ]
             },
             "rollingRetentionYears": {
               "type": "integer",

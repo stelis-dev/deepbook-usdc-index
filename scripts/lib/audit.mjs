@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { readJson } from "./io.mjs";
 import { summarizePairBars } from "./reconcile.mjs";
 import {
-  BAR_INTERVAL_MINUTES,
+  DEFAULT_BAR_INTERVAL_MINUTES,
   addMinutes,
   barsWeekPath,
   bucketStartsBetween,
@@ -12,6 +12,10 @@ import {
 } from "./paths.mjs";
 
 export async function auditGeneratedCoverage(input) {
+  const barIntervalMinutes =
+    input.barIntervalMinutes ??
+    input.pairs[0]?.collection?.barIntervalMinutes ??
+    DEFAULT_BAR_INTERVAL_MINUTES;
   const readBarsFile = input.readBarsFile ?? readJson;
   const scanTempFiles = input.scanTempFiles ?? true;
   const weekCache = new Map();
@@ -53,7 +57,10 @@ export async function auditGeneratedCoverage(input) {
     const summary = emptySummary(pair.id, startIso, endIso);
     summaries.push(summary);
 
-    if (!isAligned(startIso) || !isAligned(endIso)) {
+    if (
+      !isAligned(startIso, barIntervalMinutes) ||
+      !isAligned(endIso, barIntervalMinutes)
+    ) {
       issues.push({
         pairId: pair.id,
         start: startIso,
@@ -96,8 +103,8 @@ export async function auditGeneratedCoverage(input) {
     );
     for (const start of bucketStartsBetween(
       startIso,
-      addMinutes(endIso, BAR_INTERVAL_MINUTES),
-      BAR_INTERVAL_MINUTES,
+      addMinutes(endIso, barIntervalMinutes),
+      barIntervalMinutes,
     )) {
       const day = daySummary(summary, start);
       day.expected += 1;
@@ -126,7 +133,7 @@ export async function auditGeneratedCoverage(input) {
       }
 
       const bar = matches[0];
-      if (bar.end !== addMinutes(start, BAR_INTERVAL_MINUTES)) {
+      if (bar.end !== addMinutes(start, barIntervalMinutes)) {
         issues.push({
           pairId: pair.id,
           start,
@@ -187,6 +194,7 @@ export async function auditGeneratedCoverage(input) {
     issues,
     knownMissing,
     summaries,
+    barIntervalMinutes,
   };
 }
 
@@ -206,7 +214,7 @@ export function formatAuditReport(result, options = {}) {
     0,
   );
   lines.push(
-    `coverage audit: ${result.ok ? "ok" : "failed"} (${expected} expected 10-minute bars, ${missing} known missing, ${absent} absent)`,
+    `coverage audit: ${result.ok ? "ok" : "failed"} (${expected} expected ${result.barIntervalMinutes}-minute bars, ${missing} known missing, ${absent} absent)`,
   );
 
   for (const summary of result.summaries) {
@@ -215,7 +223,7 @@ export function formatAuditReport(result, options = {}) {
       continue;
     }
     lines.push(
-      `${summary.pairId}: ${summary.start}..${addMinutes(summary.end, BAR_INTERVAL_MINUTES)} expected=${summary.expected} filled=${summary.filled} empty=${summary.empty} missing=${summary.missing} absent=${summary.absent}`,
+      `${summary.pairId}: ${summary.start}..${addMinutes(summary.end, result.barIntervalMinutes)} expected=${summary.expected} filled=${summary.filled} empty=${summary.empty} missing=${summary.missing} absent=${summary.absent}`,
     );
     for (const day of summary.days.filter(
       (item) => item.missing > 0 || item.absent > 0,
@@ -304,8 +312,8 @@ function daySummary(summary, start) {
   return day;
 }
 
-function isAligned(iso) {
-  return floorIsoToInterval(new Date(iso), BAR_INTERVAL_MINUTES) === iso;
+function isAligned(iso, barIntervalMinutes) {
+  return floorIsoToInterval(new Date(iso), barIntervalMinutes) === iso;
 }
 
 async function cachedWeekFile(cache, readBarsFile, path) {

@@ -28,8 +28,10 @@ import {
   recordLiveBucketAttempt,
 } from "../scripts/lib/state.mjs";
 import {
+  barIntervalMinutesFromPairs,
   liveRunModeFromInput,
   repairLiveLookbackHoursFromInput,
+  validateBarIntervalMinutes,
 } from "../scripts/lib/config.mjs";
 import {
   enforceDataRetention,
@@ -74,7 +76,7 @@ test("registered pairs are direct USDC pairs with unique ids and pools", () => {
     assert.match(pair.id, /^[A-Z0-9]+_USDC$/);
     assert.equal(pair.quoteAsset, "USDC");
     assert.equal(pair.priceConvention, "USDC_PER_BASE");
-    assert.equal(pair.collection.barIntervalMinutes, 10);
+    assert.equal(pair.collection.barIntervalMinutes, 5);
     assert.equal(ids.has(pair.id), false, `duplicate id ${pair.id}`);
     assert.equal(
       pools.has(pair.poolId),
@@ -84,6 +86,48 @@ test("registered pairs are direct USDC pairs with unique ids and pools", () => {
     ids.add(pair.id);
     pools.add(pair.poolId);
   }
+  assert.equal(barIntervalMinutesFromPairs(registry.pairs), 5);
+});
+
+test("registry excludes wrapped and third-party stable base assets", () => {
+  assert.deepEqual(registry.pairs.map((pair) => pair.baseAsset.symbol).sort(), [
+    "DEEP",
+    "NS",
+    "SUI",
+    "USDSUI",
+    "WAL",
+  ]);
+  assert.deepEqual(registry.pairs.map((pair) => pair.id).sort(), [
+    "DEEP_USDC",
+    "NS_USDC",
+    "SUI_USDC",
+    "USDSUI_USDC",
+    "WAL_USDC",
+  ]);
+});
+
+test("bar interval is configurable but shared across enabled pairs", () => {
+  const pair5m = {
+    ...suiUsdc,
+    collection: { ...suiUsdc.collection, barIntervalMinutes: 5 },
+  };
+  const pair15m = {
+    ...suiUsdc,
+    id: "ALT_USDC",
+    collection: { ...suiUsdc.collection, barIntervalMinutes: 15 },
+  };
+
+  validateBarIntervalMinutes(5, "test");
+  validateBarIntervalMinutes(15, "test");
+  assert.equal(barIntervalMinutesFromPairs([pair5m]), 5);
+  assert.throws(
+    () => validateBarIntervalMinutes(7, "test"),
+    /evenly divide one UTC day/,
+  );
+  assert.throws(
+    () => barIntervalMinutesFromPairs([pair5m, pair15m]),
+    /share one barIntervalMinutes/,
+  );
 });
 
 test("README states the public UTC weekly read path without USD, route, or P&L claims", async () => {
@@ -92,7 +136,7 @@ test("README states the public UTC weekly read path without USD, route, or P&L c
     readme,
     /data\/<PAIR>\/bars\/<ISO_WEEK_YEAR>\/W<ISO_WEEK>\.json/,
   );
-  assert.match(readme, /10-minute UTC/i);
+  assert.match(readme, /barIntervalMinutes/i);
   assert.match(readme, /Direct file URLs cannot list directories/i);
   assert.match(readme, /not fiat USD/i);
   assert.match(readme, /not.*P&L/i);
@@ -242,7 +286,7 @@ test("UTC ISO week paths are deterministic and do not require directory listing"
   );
 });
 
-test("weekly bars distinguish filled and empty 10-minute UTC buckets", () => {
+test("weekly bars distinguish filled and empty 5-minute UTC buckets", () => {
   const record = {
     timestamp: "2026-06-27T14:21:00.000Z",
     eventSequenceNumber: "1",
@@ -252,7 +296,7 @@ test("weekly bars distinguish filled and empty 10-minute UTC buckets", () => {
   };
   const filled = buildBar(suiUsdc, [record], {
     startIso: "2026-06-27T14:20:00.000Z",
-    endIso: "2026-06-27T14:30:00.000Z",
+    endIso: "2026-06-27T14:25:00.000Z",
   });
   assert.equal(filled.status, "filled");
   assert.equal(filled.eventCount, 1);
@@ -271,7 +315,7 @@ test("weekly bars distinguish filled and empty 10-minute UTC buckets", () => {
 
   const empty = buildBar(suiUsdc, [], {
     startIso: "2026-06-27T14:30:00.000Z",
-    endIso: "2026-06-27T14:40:00.000Z",
+    endIso: "2026-06-27T14:35:00.000Z",
   });
   assert.equal(empty.status, "empty");
   assert.equal(empty.eventCount, 0);
@@ -291,7 +335,7 @@ test("weekly bars distinguish filled and empty 10-minute UTC buckets", () => {
   const merged = mergeWeeklyBars(null, suiUsdc, filled.start, empty);
   assert.equal(merged.week.weekYear, 2026);
   assert.equal(merged.week.week, 26);
-  assert.equal(merged.barIntervalMinutes, 10);
+  assert.equal(merged.barIntervalMinutes, 5);
   assert.equal(merged.bars.length, 1);
 });
 
@@ -350,20 +394,26 @@ test("backfill chunk starts one week before the previous covered anchor", () => 
 test("first live collection covers the 30-minute window before scheduled collection", () => {
   const state = initialPairWorkflowState();
   assert.deepEqual(
-    nextLiveBucketStarts(state, "2026-06-27T16:50:00.000Z", 12, 30),
+    nextLiveBucketStarts(state, "2026-06-27T16:50:00.000Z", 24, 30),
     [
+      "2026-06-27T16:25:00.000Z",
       "2026-06-27T16:30:00.000Z",
+      "2026-06-27T16:35:00.000Z",
       "2026-06-27T16:40:00.000Z",
+      "2026-06-27T16:45:00.000Z",
       "2026-06-27T16:50:00.000Z",
     ],
   );
 
   state.live.lastQueuedBucketStart = "2026-06-27T16:50:00.000Z";
   assert.deepEqual(
-    nextLiveBucketStarts(state, "2026-06-27T17:20:00.000Z", 12, 30),
+    nextLiveBucketStarts(state, "2026-06-27T17:20:00.000Z", 24, 30),
     [
+      "2026-06-27T16:55:00.000Z",
       "2026-06-27T17:00:00.000Z",
+      "2026-06-27T17:05:00.000Z",
       "2026-06-27T17:10:00.000Z",
+      "2026-06-27T17:15:00.000Z",
       "2026-06-27T17:20:00.000Z",
     ],
   );
@@ -376,50 +426,77 @@ test("live collection catch-up is bounded by the configured bucket cap", () => {
   const starts = nextLiveBucketStarts(
     state,
     "2026-06-27T18:50:00.000Z",
-    12,
+    24,
     30,
   );
-  assert.equal(starts.length, 12);
-  assert.equal(starts[0], "2026-06-27T17:00:00.000Z");
+  assert.equal(starts.length, 24);
+  assert.equal(starts[0], "2026-06-27T16:55:00.000Z");
   assert.equal(starts.at(-1), "2026-06-27T18:50:00.000Z");
 
   const delayed = nextLiveBucketStarts(
     state,
     "2026-06-27T19:20:00.000Z",
-    12,
+    24,
     30,
   );
-  assert.equal(delayed.length, 12);
-  assert.equal(delayed[0], "2026-06-27T17:00:00.000Z");
+  assert.equal(delayed.length, 24);
+  assert.equal(delayed[0], "2026-06-27T16:55:00.000Z");
   assert.equal(delayed.at(-1), "2026-06-27T18:50:00.000Z");
 });
 
-test("workflow start jitter still produces UTC 10-minute bucket starts", () => {
+test("workflow start jitter still produces UTC 5-minute bucket starts", () => {
   assert.equal(
-    latestClosedBucketStart(new Date("2026-06-27T17:07:31.123Z"), 10),
-    "2026-06-27T16:50:00.000Z",
+    latestClosedBucketStart(new Date("2026-06-27T17:07:31.123Z"), 5),
+    "2026-06-27T17:00:00.000Z",
   );
   assert.equal(
-    latestClosedBucketStart(new Date("2026-06-27T17:29:59.999Z"), 10),
-    "2026-06-27T17:10:00.000Z",
-  );
-  assert.equal(
-    latestClosedBucketStart(new Date("2026-06-27T17:30:00.000Z"), 10),
+    latestClosedBucketStart(new Date("2026-06-27T17:29:59.999Z"), 5),
     "2026-06-27T17:20:00.000Z",
+  );
+  assert.equal(
+    latestClosedBucketStart(new Date("2026-06-27T17:30:00.000Z"), 5),
+    "2026-06-27T17:25:00.000Z",
   );
 
   const state = initialPairWorkflowState();
   assert.deepEqual(
     nextLiveBucketStarts(
       state,
-      latestClosedBucketStart(new Date("2026-06-27T17:07:31.123Z"), 10),
+      latestClosedBucketStart(new Date("2026-06-27T17:07:31.123Z"), 5),
       12,
       30,
+      5,
+    ),
+    [
+      "2026-06-27T16:35:00.000Z",
+      "2026-06-27T16:40:00.000Z",
+      "2026-06-27T16:45:00.000Z",
+      "2026-06-27T16:50:00.000Z",
+      "2026-06-27T16:55:00.000Z",
+      "2026-06-27T17:00:00.000Z",
+    ],
+  );
+});
+
+test("workflow start jitter follows the configured UTC interval", () => {
+  assert.equal(
+    latestClosedBucketStart(new Date("2026-06-27T17:29:59.999Z"), 15),
+    "2026-06-27T17:00:00.000Z",
+  );
+
+  const state = initialPairWorkflowState();
+  assert.deepEqual(
+    nextLiveBucketStarts(
+      state,
+      latestClosedBucketStart(new Date("2026-06-27T17:29:59.999Z"), 15),
+      12,
+      45,
+      15,
     ),
     [
       "2026-06-27T16:30:00.000Z",
-      "2026-06-27T16:40:00.000Z",
-      "2026-06-27T16:50:00.000Z",
+      "2026-06-27T16:45:00.000Z",
+      "2026-06-27T17:00:00.000Z",
     ],
   );
 });
@@ -434,6 +511,7 @@ test("manual live collection only queues uncollected closed UTC buckets", () => 
       latestClosedBucketStart(new Date("2026-06-27T17:07:31.123Z"), 10),
       12,
       30,
+      10,
     ),
     [],
   );
@@ -444,6 +522,7 @@ test("manual live collection only queues uncollected closed UTC buckets", () => 
       latestClosedBucketStart(new Date("2026-06-27T17:15:00.000Z"), 10),
       12,
       30,
+      10,
     ),
     ["2026-06-27T17:00:00.000Z"],
   );
@@ -461,7 +540,9 @@ test("live 24h repair never scans before the live anchor", () => {
     liveRepairBucketStarts(state, "2026-06-27T17:00:00.000Z", 24 * 60),
     [
       "2026-06-27T16:40:00.000Z",
+      "2026-06-27T16:45:00.000Z",
       "2026-06-27T16:50:00.000Z",
+      "2026-06-27T16:55:00.000Z",
       "2026-06-27T17:00:00.000Z",
     ],
   );
@@ -472,8 +553,8 @@ test("live 24h repair never scans before the live anchor", () => {
     "2026-06-27T17:00:00.000Z",
     24 * 60,
   );
-  assert.equal(starts.length, 144);
-  assert.equal(starts[0], "2026-06-26T17:10:00.000Z");
+  assert.equal(starts.length, 288);
+  assert.equal(starts[0], "2026-06-26T17:05:00.000Z");
   assert.equal(starts.at(-1), "2026-06-27T17:00:00.000Z");
 });
 
@@ -492,6 +573,7 @@ test("coverage audit accepts filled empty and tracked missing buckets", async ()
   const result = await auditGeneratedCoverage({
     pairs: [{ id: "SUI_USDC" }],
     workflow: { pairs: { SUI_USDC: state } },
+    barIntervalMinutes: 10,
     scanTempFiles: false,
     readBarsFile: async () => ({
       bars: [
@@ -535,6 +617,7 @@ test("coverage audit fails when covered buckets are absent or state is stale", a
   const result = await auditGeneratedCoverage({
     pairs: [{ id: "SUI_USDC" }],
     workflow: { pairs: { SUI_USDC: state } },
+    barIntervalMinutes: 10,
     scanTempFiles: false,
     readBarsFile: async () => ({
       bars: [
@@ -598,7 +681,11 @@ test("live collection retries missing closed buckets without moving the frontier
 
   assert.deepEqual(
     nextLiveBucketStarts(state, "2026-06-27T17:00:00.000Z", 3, 30),
-    ["2026-06-27T16:40:00.000Z", "2026-06-27T17:00:00.000Z"],
+    [
+      "2026-06-27T16:40:00.000Z",
+      "2026-06-27T16:55:00.000Z",
+      "2026-06-27T17:00:00.000Z",
+    ],
   );
 
   recordLiveBucketAttempt(state, "2026-06-27T17:00:00.000Z", {
@@ -646,12 +733,12 @@ test("backfill covered range clears tracked missing buckets in that range", () =
   );
 });
 
-test("backfill falls back to OrderFilled event scan for dense 10-minute windows", async () => {
+test("backfill falls back to OrderFilled event scan for dense 5-minute windows", async () => {
   const chunk = await scanBackfillChunk({
     pair: suiUsdc,
     eventTypes: registry.eventSources.orderFilledEventTypes,
     anchor: "2026-06-27T16:50:00.000Z",
-    firstBucketStart: "2026-06-27T16:40:00.000Z",
+    firstBucketStart: "2026-06-27T16:45:00.000Z",
     lookbackHours: 1,
     pageSize: 50,
     maxPages: 1,
@@ -659,7 +746,7 @@ test("backfill falls back to OrderFilled event scan for dense 10-minute windows"
     maxEventPages: 10,
     maxFillRecords: 10000,
     resolveBackfillCheckpointRange: async ({ startIso, endIso }) => {
-      assert.equal(startIso, "2026-06-27T16:40:00.000Z");
+      assert.equal(startIso, "2026-06-27T16:45:00.000Z");
       assert.equal(endIso, "2026-06-27T16:50:00.000Z");
       return {
         status: "ok",
@@ -686,7 +773,7 @@ test("backfill falls back to OrderFilled event scan for dense 10-minute windows"
       return {
         records: [
           {
-            timestamp: "2026-06-27T16:41:00.000Z",
+            timestamp: "2026-06-27T16:46:00.000Z",
             checkpoint: "101",
             eventSequenceNumber: "1",
           },
@@ -700,7 +787,7 @@ test("backfill falls back to OrderFilled event scan for dense 10-minute windows"
   });
 
   assert.equal(chunk.status, "ok");
-  assert.equal(chunk.startIso, "2026-06-27T16:40:00.000Z");
+  assert.equal(chunk.startIso, "2026-06-27T16:45:00.000Z");
   assert.equal(chunk.page.scanSource, "order_filled_events");
   assert.equal(
     chunk.page.fallbackReason,
@@ -889,6 +976,7 @@ test("coverage audit fails when workflow coverage does not include local data", 
       pairs: [{ id: "SUI_USDC" }],
       workflow: { pairs: { SUI_USDC: state } },
       dataRoot: root,
+      barIntervalMinutes: 10,
       scanTempFiles: false,
     });
 
@@ -929,7 +1017,7 @@ test("backfill window steps backward from the live anchor", () => {
     "2026-06-27T16:50:00.000Z",
   );
 
-  assert.equal(window.oldestBucketStart, "2026-06-27T16:00:00.000Z");
+  assert.equal(window.oldestBucketStart, "2026-06-27T16:05:00.000Z");
   assert.equal(window.anchor, "2026-06-27T16:50:00.000Z");
   assert.equal(window.oldestCheckpoint, "90");
   assert.deepEqual(
@@ -938,7 +1026,7 @@ test("backfill window steps backward from the live anchor", () => {
   );
 });
 
-test("candle OHLC is chronological inside each 10-minute bucket", () => {
+test("candle OHLC is chronological inside each interval bucket", () => {
   const bar = buildBar(
     suiUsdc,
     [
@@ -978,7 +1066,7 @@ test("candle OHLC is chronological inside each 10-minute bucket", () => {
   assert.equal(bar.quoteVolumeAtomic, "800");
 });
 
-test("covered range writer emits empty 10-minute buckets between filled buckets", async () => {
+test("covered range writer emits empty 5-minute buckets between filled buckets", async () => {
   const record = {
     timestamp: "2026-06-27T14:21:00.000Z",
     eventSequenceNumber: "1",
@@ -992,8 +1080,9 @@ test("covered range writer emits empty 10-minute buckets between filled buckets"
     pair: suiUsdc,
     records: [record],
     startIso: "2026-06-27T14:20:00.000Z",
-    endExclusiveIso: "2026-06-27T14:40:00.000Z",
+    endExclusiveIso: "2026-06-27T14:30:00.000Z",
     writeGeneratedData: false,
+    barIntervalMinutes: 5,
   });
   assert.equal(results.length, 2);
   assert.equal(results[0].status, "filled");

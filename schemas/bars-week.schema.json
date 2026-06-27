@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cdn.jsdelivr.net/gh/stelis-dev/deepbook-usdc-index@main/schemas/bars-week.schema.json",
-  "title": "DeepBook USDC Weekly 10-Minute Bars",
+  "title": "DeepBook USDC Weekly Bars",
   "type": "object",
   "required": [
     "schemaVersion",
@@ -28,7 +28,13 @@
         "timeZone": { "const": "UTC" }
       }
     },
-    "barIntervalMinutes": { "const": 10 },
+    "barIntervalMinutes": {
+      "enum": [
+        1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 30, 32, 36, 40, 45,
+        48, 60, 72, 80, 90, 96, 120, 144, 160, 180, 240, 288, 360, 480, 720,
+        1440
+      ]
+    },
     "priceConvention": { "const": "USDC_PER_BASE" },
     "disclaimer": { "type": "string", "minLength": 1 },
     "bars": {

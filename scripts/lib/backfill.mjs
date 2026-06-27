@@ -4,14 +4,18 @@ import {
   sortFillRecords,
 } from "./events.mjs";
 import {
-  BAR_INTERVAL_MINUTES,
+  DEFAULT_BAR_INTERVAL_MINUTES,
   addMinutes,
   compareIso,
   floorIsoToInterval,
 } from "./paths.mjs";
 
-export function backfillWindowFromAnchor(records, anchor) {
-  assertBackfillAnchor(anchor);
+export function backfillWindowFromAnchor(
+  records,
+  anchor,
+  barIntervalMinutes = DEFAULT_BAR_INTERVAL_MINUTES,
+) {
+  assertBackfillAnchor(anchor, barIntervalMinutes);
   const historicalRecords = sortFillRecords(
     records.filter((record) => compareIso(record.timestamp, anchor) < 0),
   );
@@ -19,45 +23,71 @@ export function backfillWindowFromAnchor(records, anchor) {
   return {
     records: historicalRecords,
     oldestBucketStart: oldestRecord
-      ? bucketStartAtOrBeforeFromAnchor(oldestRecord.timestamp, anchor)
+      ? bucketStartAtOrBeforeFromAnchor(
+          oldestRecord.timestamp,
+          anchor,
+          barIntervalMinutes,
+        )
       : null,
     anchor,
     oldestCheckpoint: oldestRecord?.checkpoint ?? null,
   };
 }
 
-export function backfillChunkStart(anchor, earliestBucketStart, lookbackHours) {
-  assertBackfillAnchor(anchor);
-  assertBackfillAnchor(earliestBucketStart);
-  const requestedStart = addMinutes(anchor, -lookbackHours * 60);
+export function backfillChunkStart(
+  anchor,
+  earliestBucketStart,
+  lookbackHours,
+  barIntervalMinutes = DEFAULT_BAR_INTERVAL_MINUTES,
+) {
+  assertBackfillAnchor(anchor, barIntervalMinutes);
+  assertBackfillAnchor(earliestBucketStart, barIntervalMinutes);
+  const requestedBuckets = Math.max(
+    1,
+    Math.floor((lookbackHours * 60) / barIntervalMinutes),
+  );
+  const requestedStart = addMinutes(
+    anchor,
+    -requestedBuckets * barIntervalMinutes,
+  );
   return compareIso(requestedStart, earliestBucketStart) < 0
     ? earliestBucketStart
     : requestedStart;
 }
 
-export function backfillAnchorForPairState(pairState) {
+export function backfillAnchorForPairState(
+  pairState,
+  barIntervalMinutes = DEFAULT_BAR_INTERVAL_MINUTES,
+) {
   const anchor =
     pairState.backfill.oldestCoveredBucketStart ??
     pairState.live.firstCoveredBucketStart;
   if (!anchor) {
     throw new Error(
-      "Backfill requires a live collection anchor; run collect until it writes at least one covered 10-minute bucket first",
+      `Backfill requires a live collection anchor; run collect until it writes at least one covered ${barIntervalMinutes}-minute bucket first`,
     );
   }
-  assertBackfillAnchor(anchor);
+  assertBackfillAnchor(anchor, barIntervalMinutes);
   return anchor;
 }
 
-export function assertBackfillAnchor(anchor) {
-  const floored = floorIsoToInterval(new Date(anchor), BAR_INTERVAL_MINUTES);
+export function assertBackfillAnchor(
+  anchor,
+  barIntervalMinutes = DEFAULT_BAR_INTERVAL_MINUTES,
+) {
+  const floored = floorIsoToInterval(new Date(anchor), barIntervalMinutes);
   if (floored !== anchor) {
     throw new Error(
-      `Backfill anchor must be a 10-minute UTC bucket start: ${anchor}`,
+      `Backfill anchor must be a ${barIntervalMinutes}-minute UTC bucket start: ${anchor}`,
     );
   }
 }
 
 export async function scanBackfillChunk(input) {
+  const barIntervalMinutes =
+    input.barIntervalMinutes ??
+    input.pair.collection?.barIntervalMinutes ??
+    DEFAULT_BAR_INTERVAL_MINUTES;
   const scanPoolTransactions =
     input.scanPoolTransactionsForCheckpointRange ??
     scanPoolTransactionsForCheckpointRange;
@@ -68,6 +98,7 @@ export async function scanBackfillChunk(input) {
     input.anchor,
     input.firstBucketStart,
     input.lookbackHours,
+    barIntervalMinutes,
   );
 
   while (true) {
@@ -100,7 +131,11 @@ export async function scanBackfillChunk(input) {
       };
     }
 
-    const bucketCount = bucketCountBetween(candidateStart, input.anchor);
+    const bucketCount = bucketCountBetween(
+      candidateStart,
+      input.anchor,
+      barIntervalMinutes,
+    );
     if (bucketCount <= 1) {
       return await scanOrderFilledEventFallback({
         input,
@@ -115,7 +150,8 @@ export async function scanBackfillChunk(input) {
     const requestedStart = backfillChunkStart(
       input.anchor,
       input.firstBucketStart,
-      (nextBucketCount * BAR_INTERVAL_MINUTES) / 60,
+      (nextBucketCount * barIntervalMinutes) / 60,
+      barIntervalMinutes,
     );
     if (requestedStart === candidateStart) {
       return await scanOrderFilledEventFallback({
@@ -130,12 +166,16 @@ export async function scanBackfillChunk(input) {
   }
 }
 
-function bucketStartAtOrBeforeFromAnchor(timestamp, anchor) {
-  const intervalMs = BAR_INTERVAL_MINUTES * 60_000;
+function bucketStartAtOrBeforeFromAnchor(
+  timestamp,
+  anchor,
+  barIntervalMinutes,
+) {
+  const intervalMs = barIntervalMinutes * 60_000;
   const anchorMs = Date.parse(anchor);
   const timestampMs = Date.parse(timestamp);
   const intervalsBack = Math.ceil((anchorMs - timestampMs) / intervalMs);
-  return addMinutes(anchor, -intervalsBack * BAR_INTERVAL_MINUTES);
+  return addMinutes(anchor, -intervalsBack * barIntervalMinutes);
 }
 
 async function scanOrderFilledEventFallback(input) {
@@ -179,8 +219,8 @@ async function scanOrderFilledEventFallback(input) {
   };
 }
 
-function bucketCountBetween(startIso, endIso) {
-  const intervalMs = BAR_INTERVAL_MINUTES * 60_000;
+function bucketCountBetween(startIso, endIso, barIntervalMinutes) {
+  const intervalMs = barIntervalMinutes * 60_000;
   return Math.max(
     0,
     Math.round((Date.parse(endIso) - Date.parse(startIso)) / intervalMs),

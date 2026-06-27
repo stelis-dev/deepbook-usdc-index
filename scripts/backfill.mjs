@@ -1,4 +1,5 @@
 import {
+  barIntervalMinutesFromPairs,
   backfillLookbackHoursFromEnv,
   backfillMaxTransactionPagesFromEnv,
   enabledPairs,
@@ -23,7 +24,6 @@ import {
 } from "./lib/backfill.mjs";
 import { writeCoveredBucketRange } from "./lib/buckets.mjs";
 import {
-  BAR_INTERVAL_MINUTES,
   compareIso,
   floorIsoToInterval,
   latestClosedBucketStart,
@@ -53,8 +53,10 @@ const registry = await loadRegistry();
 const writeGeneratedData = shouldWriteGeneratedData(args);
 console.log(`mode: ${writeModeLabel(writeGeneratedData)}`);
 const pairs = enabledPairs(registry, args.pair);
+const barIntervalMinutes = barIntervalMinutesFromPairs(pairs);
+console.log(`bar-interval-minutes: ${barIntervalMinutes}`);
 const eventTypes = registry.eventSources.orderFilledEventTypes;
-const workflow = await loadWorkflowState();
+const workflow = await loadWorkflowState(barIntervalMinutes);
 const lookbackHours = backfillLookbackHoursFromEnv();
 const maxTransactionPages = backfillMaxTransactionPagesFromEnv();
 const transactionPageSize = Number(
@@ -74,7 +76,7 @@ const resolveBackfillCheckpointRange = createBucketCheckpointRangeResolver({
 });
 const latestClosedStart = latestClosedBucketStart(
   new Date(),
-  BAR_INTERVAL_MINUTES,
+  barIntervalMinutes,
 );
 
 console.log(
@@ -109,7 +111,7 @@ for (const pair of pairs) {
     console.log(`${pair.id}: backfill already complete`);
     continue;
   }
-  const anchor = backfillAnchorForPairState(pairState);
+  const anchor = backfillAnchorForPairState(pairState, barIntervalMinutes);
   const firstTransaction = await firstPoolTransaction(pair.poolId);
   if (!firstTransaction) {
     if (writeGeneratedData) {
@@ -122,11 +124,12 @@ for (const pair of pairs) {
   }
   const firstBucketStart = floorIsoToInterval(
     new Date(firstTransaction.timestamp),
-    BAR_INTERVAL_MINUTES,
+    barIntervalMinutes,
   );
   const retentionStart = retentionCutoffStart(
     latestClosedStart,
     pair.collection.rollingRetentionYears,
+    barIntervalMinutes,
   );
   const earliestBucketStart =
     compareIso(retentionStart, firstBucketStart) > 0
@@ -158,6 +161,7 @@ for (const pair of pairs) {
     maxEventPages,
     maxFillRecords,
     resolveBackfillCheckpointRange,
+    barIntervalMinutes,
   });
 
   if (chunk.status === "unavailable") {
@@ -187,6 +191,7 @@ for (const pair of pairs) {
       startIso: chunk.startIso,
       endExclusiveIso: anchor,
       writeGeneratedData,
+      barIntervalMinutes,
     });
     clearMissingBucketsBetween(pairState, chunk.startIso, anchor);
     pairState.backfill.oldestCoveredBucketStart = chunk.startIso;
@@ -214,6 +219,7 @@ if (writeGeneratedData) {
     workflow,
     referenceIso: latestClosedStart,
     writeGeneratedData,
+    barIntervalMinutes,
   });
   for (const summary of retentionSummaries) {
     if (summary.deletedFiles > 0 || summary.trimmedBars > 0) {

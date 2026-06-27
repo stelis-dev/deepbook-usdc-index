@@ -1,12 +1,19 @@
 import { auditGeneratedCoverage, formatAuditReport } from "./lib/audit.mjs";
-import { enabledPairs, loadRegistry } from "./lib/config.mjs";
+import {
+  barIntervalMinutesFromPairs,
+  enabledPairs,
+  loadRegistry,
+} from "./lib/config.mjs";
 import { loadWorkflowState } from "./lib/state.mjs";
 
 const registry = await loadRegistry();
-const workflow = await loadWorkflowState();
+const pairs = enabledPairs(registry);
+const barIntervalMinutes = barIntervalMinutesFromPairs(pairs);
+const workflow = await loadWorkflowState(barIntervalMinutes);
 const result = await auditGeneratedCoverage({
-  pairs: enabledPairs(registry),
+  pairs,
   workflow,
+  barIntervalMinutes,
 });
 
 const report = formatAuditReport(result);

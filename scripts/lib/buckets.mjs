@@ -2,7 +2,7 @@ import { sortFillRecords } from "./events.mjs";
 import { readJson, writeJson } from "./io.mjs";
 import { buildBar, mergeWeeklyBars, missingBar } from "./ohlc.mjs";
 import {
-  BAR_INTERVAL_MINUTES,
+  DEFAULT_BAR_INTERVAL_MINUTES,
   addMinutes,
   barsWeekPath,
   bucketStartsBetween,
@@ -30,11 +30,12 @@ export async function writeCoveredBucket(input) {
 }
 
 export async function writeCoveredBucketRange(input) {
+  const barIntervalMinutes = bucketInterval(input);
   const groups = new Map();
   for (const record of input.records) {
     const startIso = floorIsoToInterval(
       new Date(record.timestamp),
-      BAR_INTERVAL_MINUTES,
+      barIntervalMinutes,
     );
     const group = groups.get(startIso) ?? [];
     group.push(record);
@@ -44,13 +45,13 @@ export async function writeCoveredBucketRange(input) {
   for (const startIso of bucketStartsBetween(
     input.startIso,
     input.endExclusiveIso,
-    BAR_INTERVAL_MINUTES,
+    barIntervalMinutes,
   )) {
     results.push(
       await writeCoveredBucket({
         pair: input.pair,
         startIso,
-        endIso: addMinutes(startIso, BAR_INTERVAL_MINUTES),
+        endIso: addMinutes(startIso, barIntervalMinutes),
         records: groups.get(startIso) ?? [],
         writeGeneratedData: input.writeGeneratedData,
       }),
@@ -73,4 +74,12 @@ export async function writeMissingBucket(input) {
     status: "missing",
     records: [],
   };
+}
+
+function bucketInterval(input) {
+  return (
+    input.barIntervalMinutes ??
+    input.pair.collection?.barIntervalMinutes ??
+    DEFAULT_BAR_INTERVAL_MINUTES
+  );
 }

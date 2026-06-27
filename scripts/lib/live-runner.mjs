@@ -6,7 +6,7 @@ import {
 } from "./checkpoints.mjs";
 import { availableEventRange, firstPoolTransaction } from "./events.mjs";
 import { collectLiveBucket } from "./live-collect.mjs";
-import { BAR_INTERVAL_MINUTES, addMinutes } from "./paths.mjs";
+import { DEFAULT_BAR_INTERVAL_MINUTES, addMinutes } from "./paths.mjs";
 import { pairWorkflowState, recordLiveBucketAttempt } from "./state.mjs";
 
 export async function createLiveCollectionContext(registry) {
@@ -26,6 +26,8 @@ export async function createLiveCollectionContext(registry) {
 }
 
 export async function runLiveBucketJob(input) {
+  const barIntervalMinutes =
+    input.barIntervalMinutes ?? DEFAULT_BAR_INTERVAL_MINUTES;
   for (const pair of input.pairs) {
     const pairState = pairWorkflowState(input.workflow, pair.id);
     const starts = input.bucketStartsForPair(pairState, pair);
@@ -36,7 +38,7 @@ export async function runLiveBucketJob(input) {
 
     const firstTransaction = await firstPoolTransaction(pair.poolId);
     for (const startIso of starts) {
-      const endIso = addMinutes(startIso, BAR_INTERVAL_MINUTES);
+      const endIso = addMinutes(startIso, barIntervalMinutes);
       const resolvedCheckpointRange = await input.resolveBucketCheckpointRange({
         startIso,
         endIso,
@@ -51,7 +53,12 @@ export async function runLiveBucketJob(input) {
         writeGeneratedData: input.writeGeneratedData,
       });
       if (input.writeGeneratedData) {
-        recordLiveBucketAttempt(pairState, startIso, result);
+        recordLiveBucketAttempt(
+          pairState,
+          startIso,
+          result,
+          barIntervalMinutes,
+        );
       }
       console.log(
         `${pair.id}: ${input.writeGeneratedData ? input.writeVerb : input.dryRunVerb} ${result.records.length} events for ${startIso}..${endIso} (${result.status})`,

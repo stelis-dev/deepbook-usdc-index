@@ -2,16 +2,16 @@
 
 Public DeepBook candle index for selected Sui mainnet pools quoted against canonical Circle USDC.
 
-This repository is a data index, not a trading service. It records 10-minute UTC candles derived from observed DeepBook `OrderFilled` events for registered pools. It does not choose routes, rank venues, provide best-price advice, compute P&L, provide tax or cost-basis output, or treat USDC as fiat USD.
+This repository is a data index, not a trading service. It records configured-interval UTC candles derived from observed DeepBook `OrderFilled` events for registered pools. It does not choose routes, rank venues, provide best-price advice, compute P&L, provide tax or cost-basis output, or treat USDC as fiat USD.
 
 ## What This Repository Stores
 
 Public files:
 
 - Pair registry: `registry/pairs.json`
-- Weekly 10-minute candles: `data/<PAIR>/bars/<ISO_WEEK_YEAR>/W<ISO_WEEK>.json`
+- Weekly candle files: `data/<PAIR>/bars/<ISO_WEEK_YEAR>/W<ISO_WEEK>.json`
 
-The public data schema is bars-only: one registry file plus weekly 10-minute candle files.
+The public data schema is bars-only: one registry file plus weekly candle files.
 
 `USDC` in this repository means the Sui mainnet Circle USDC coin type pinned in `registry/pairs.json`. It is not fiat USD and is not a USDC/USD peg guarantee.
 
@@ -40,7 +40,7 @@ If workflow state is missing or stale, it can be reconciled from local candle fi
   "quoteAsset": "USDC",
   "priceConvention": "USDC_PER_BASE",
   "collection": {
-    "barIntervalMinutes": 10,
+    "barIntervalMinutes": 5,
     "rollingRetentionYears": 2
   }
 }
@@ -54,10 +54,12 @@ Field rules:
 - `baseAsset`: token symbol, full Sui coin type, and decimals for the asset priced against USDC.
 - `quoteAsset`: must be `USDC`. This repository does not silently choose another quote asset.
 - `priceConvention`: must be `USDC_PER_BASE`, meaning the candle prices are denominated in USDC units per one base token.
-- `collection.barIntervalMinutes`: fixed at `10`; public files are UTC 10-minute candles.
+- `collection.barIntervalMinutes`: UTC candle interval in minutes. Enabled pairs must share one interval, and the interval must evenly divide one UTC day. Current registry data uses `5`.
 - `collection.rollingRetentionYears`: generated weekly candles older than this rolling window are pruned after collection or backfill runs.
 
 The top-level `quoteAsset` pins canonical Circle USDC on Sui mainnet. Do not add WUSDC, USDT, DBUSDC, or fiat USD as this repository's quote asset.
+
+The current registry intentionally excludes wrapped and third-party stable base assets. Enabled base assets are `SUI`, `DEEP`, `WAL`, `NS`, and `USDSUI`, all quoted against canonical USDC.
 
 ## Public Read Paths
 
@@ -68,7 +70,7 @@ https://cdn.jsdelivr.net/gh/stelis-dev/deepbook-usdc-index@main/registry/pairs.j
 https://cdn.jsdelivr.net/gh/stelis-dev/deepbook-usdc-index@main/data/SUI_USDC/bars/2026/W26.json
 ```
 
-Weekly files use ISO-8601 UTC week-year and week number. Candle boundaries are always 10-minute UTC boundaries. A weekly file contains the 10-minute candles that have been written for that ISO week. Each candle has a `status`:
+Weekly files use ISO-8601 UTC week-year and week number. Candle boundaries are always UTC boundaries at the interval declared by `barIntervalMinutes`. A weekly file contains the candles that have been written for that ISO week. Each candle has a `status`:
 
 - `filled`: the bucket was scanned and has one or more DeepBook fills; OHLCV fields are populated.
 - `empty`: the bucket was scanned and no fills were observed; OHLC fields are `null` and volumes are zero.
@@ -78,7 +80,7 @@ A consumer that wants a date range should compute every UTC ISO week touched by 
 
 ### TypeScript Read Example
 
-This example reads weekly files directly from direct file URLs and filters the 10-minute UTC bars for a requested time range. It reads USDC-denominated DeepBook fill candles; it does not convert USDC to fiat USD.
+This example reads weekly files directly from direct file URLs and filters UTC bars for a requested time range. It reads USDC-denominated DeepBook fill candles; it does not convert USDC to fiat USD.
 
 ```ts
 type DeepBookBar = {
@@ -96,7 +98,7 @@ type DeepBookBar = {
 
 type WeeklyBarsFile = {
   pairId: string;
-  barIntervalMinutes: 10;
+  barIntervalMinutes: number;
   bars: DeepBookBar[];
 };
 
@@ -176,7 +178,7 @@ function utcDateFloor(iso: string) {
 
 Weekly candle files contain observed DeepBook fills for the currently registered pool object. If a market used an older pool object before the current one, that older object must be registered separately before this repository can index that earlier period.
 
-Candle calculation is chronological inside each 10-minute bucket: `open` is the earliest fill in the bucket, `close` is the latest fill in the bucket, `high` and `low` are extrema over the bucket, and volume fields are sums.
+Candle calculation is chronological inside each interval bucket: `open` is the earliest fill in the bucket, `close` is the latest fill in the bucket, `high` and `low` are extrema over the bucket, and volume fields are sums.
 
 The candles are not:
 

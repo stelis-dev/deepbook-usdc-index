@@ -2,12 +2,16 @@ import { readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { readJson, writeJson } from "./io.mjs";
 import {
-  BAR_INTERVAL_MINUTES,
+  DEFAULT_BAR_INTERVAL_MINUTES,
   compareIso,
   floorIsoToInterval,
 } from "./paths.mjs";
 
-export function retentionCutoffStart(referenceIso, years) {
+export function retentionCutoffStart(
+  referenceIso,
+  years,
+  barIntervalMinutes = DEFAULT_BAR_INTERVAL_MINUTES,
+) {
   if (!Number.isSafeInteger(years) || years <= 0) {
     throw new Error("rollingRetentionYears must be a positive integer");
   }
@@ -16,16 +20,24 @@ export function retentionCutoffStart(referenceIso, years) {
     throw new Error(`Invalid retention reference timestamp: ${referenceIso}`);
   }
   date.setUTCFullYear(date.getUTCFullYear() - years);
-  return floorIsoToInterval(date, BAR_INTERVAL_MINUTES);
+  return floorIsoToInterval(date, barIntervalMinutes);
 }
 
 export async function enforceDataRetention(input) {
   const writeGeneratedData = input.writeGeneratedData ?? true;
   const dataRoot = input.dataRoot ?? "data";
+  const barIntervalMinutes =
+    input.barIntervalMinutes ??
+    input.pairs[0]?.collection?.barIntervalMinutes ??
+    DEFAULT_BAR_INTERVAL_MINUTES;
   const summaries = [];
   for (const pair of input.pairs) {
     const years = pair.collection?.rollingRetentionYears;
-    const cutoffStart = retentionCutoffStart(input.referenceIso, years);
+    const cutoffStart = retentionCutoffStart(
+      input.referenceIso,
+      years,
+      barIntervalMinutes,
+    );
     const summary = await prunePairBars({
       dataRoot,
       pairId: pair.id,

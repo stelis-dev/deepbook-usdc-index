@@ -1,9 +1,9 @@
 import { readJson } from "./io.mjs";
-import { BAR_INTERVAL_MINUTES } from "./paths.mjs";
+import { DEFAULT_BAR_INTERVAL_MINUTES } from "./paths.mjs";
 
 export const DEFAULT_GRAPHQL_URL = "https://graphql.mainnet.sui.io/graphql";
 export const DEFAULT_GRPC_URL = "https://fullnode.mainnet.sui.io:443";
-export const DEFAULT_COLLECT_MAX_BUCKETS_PER_RUN = 12;
+export const DEFAULT_COLLECT_MAX_BUCKETS_PER_RUN = 24;
 export const DEFAULT_COLLECT_INITIAL_LOOKBACK_MINUTES = 30;
 export const DEFAULT_REPAIR_LIVE_LOOKBACK_HOURS = 24;
 export const DEFAULT_BACKFILL_LOOKBACK_HOURS_PER_RUN = 168;
@@ -29,6 +29,23 @@ export function enabledPairs(registry, pairId) {
     throw new Error(`Unknown or disabled pair: ${pairId}`);
   }
   return [pair];
+}
+
+export function barIntervalMinutesFromPairs(pairs) {
+  const intervals = new Set(
+    pairs.map((pair) => pair.collection?.barIntervalMinutes),
+  );
+  if (intervals.size === 0) {
+    return DEFAULT_BAR_INTERVAL_MINUTES;
+  }
+  if (intervals.size > 1) {
+    throw new Error(
+      `Enabled pairs must share one barIntervalMinutes value: ${[...intervals].join(", ")}`,
+    );
+  }
+  const [barIntervalMinutes] = intervals;
+  validateBarIntervalMinutes(barIntervalMinutes, "enabled pairs");
+  return barIntervalMinutes;
 }
 
 export function parseArgs(argv = process.argv.slice(2)) {
@@ -138,6 +155,17 @@ export function liveRunModeFromInput(args) {
   return mode;
 }
 
+export function validateBarIntervalMinutes(value, context) {
+  if (!Number.isSafeInteger(value) || value <= 0 || value > 24 * 60) {
+    throw new Error(`${context} barIntervalMinutes must be 1..1440 minutes`);
+  }
+  if ((24 * 60) % value !== 0) {
+    throw new Error(
+      `${context} barIntervalMinutes must evenly divide one UTC day`,
+    );
+  }
+}
+
 function validateRegistry(registry) {
   if (
     !registry ||
@@ -157,6 +185,7 @@ function validateRegistry(registry) {
     );
   }
   const seen = new Set();
+  const enabledIntervals = new Set();
   for (const pair of registry.pairs ?? []) {
     if (seen.has(pair.id)) {
       throw new Error(`Duplicate pair id: ${pair.id}`);
@@ -172,8 +201,17 @@ function validateRegistry(registry) {
     if (!pair.poolId?.startsWith("0x")) {
       throw new Error(`Pair ${pair.id} has invalid poolId`);
     }
-    if (pair.collection?.barIntervalMinutes !== BAR_INTERVAL_MINUTES) {
-      throw new Error(`Pair ${pair.id} must use 10-minute UTC bars`);
+    validateBarIntervalMinutes(
+      pair.collection?.barIntervalMinutes,
+      `Pair ${pair.id}`,
+    );
+    if (pair.enabled) {
+      enabledIntervals.add(pair.collection.barIntervalMinutes);
     }
+  }
+  if (enabledIntervals.size > 1) {
+    throw new Error(
+      `Enabled pairs must share one barIntervalMinutes value: ${[...enabledIntervals].join(", ")}`,
+    );
   }
 }
