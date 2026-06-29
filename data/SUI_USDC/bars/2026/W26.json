@@ -13,6 +13,18 @@
   "disclaimer": "USDC is a token-denominated reference asset in this repository. It is not fiat USD and this repository does not guarantee a USDC/USD peg.",
   "bars": [
     {
+      "start": "2026-06-27T02:25:00.000Z",
+      "end": "2026-06-27T02:30:00.000Z",
+      "status": "filled",
+      "eventCount": 98,
+      "open": "0.707",
+      "high": "0.70717",
+      "low": "0.7054",
+      "close": "0.70562",
+      "baseVolumeAtomic": "66131900000000",
+      "quoteVolumeAtomic": "46685239118"
+    },
+    {
       "start": "2026-06-27T02:30:00.000Z",
       "end": "2026-06-27T02:35:00.000Z",
       "status": "filled",
