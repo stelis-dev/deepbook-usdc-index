@@ -14819,6 +14819,138 @@
       "close": "0.999617982037",
       "baseVolumeAtomic": "450290000",
       "quoteVolumeAtomic": "450096956"
+    },
+    {
+      "start": "2026-07-03T06:50:00.000Z",
+      "end": "2026-07-03T06:55:00.000Z",
+      "status": "filled",
+      "eventCount": 8,
+      "open": "0.999479995336",
+      "high": "0.999618",
+      "low": "0.999478984485",
+      "close": "0.999617985893",
+      "baseVolumeAtomic": "394460000",
+      "quoteVolumeAtomic": "394280567"
+    },
+    {
+      "start": "2026-07-03T06:55:00.000Z",
+      "end": "2026-07-03T07:00:00.000Z",
+      "status": "filled",
+      "eventCount": 9,
+      "open": "0.999407986577",
+      "high": "0.999643986998",
+      "low": "0.999407986577",
+      "close": "0.999505995571",
+      "baseVolumeAtomic": "455580000",
+      "quoteVolumeAtomic": "455365434"
+    },
+    {
+      "start": "2026-07-03T07:00:00.000Z",
+      "end": "2026-07-03T07:05:00.000Z",
+      "status": "filled",
+      "eventCount": 8,
+      "open": "0.999643999271",
+      "high": "0.999644",
+      "low": "0.99950598396",
+      "close": "0.999505993031",
+      "baseVolumeAtomic": "401340000",
+      "quoteVolumeAtomic": "401167901"
+    },
+    {
+      "start": "2026-07-03T07:05:00.000Z",
+      "end": "2026-07-03T07:10:00.000Z",
+      "status": "filled",
+      "eventCount": 8,
+      "open": "0.999643987235",
+      "high": "0.999644",
+      "low": "0.999503987517",
+      "close": "0.999505999661",
+      "baseVolumeAtomic": "413400000",
+      "quoteVolumeAtomic": "413223623"
+    },
+    {
+      "start": "2026-07-03T07:10:00.000Z",
+      "end": "2026-07-03T07:15:00.000Z",
+      "status": "filled",
+      "eventCount": 10,
+      "open": "0.99924999975",
+      "high": "0.999643999281",
+      "low": "0.99924999975",
+      "close": "0.999607982388",
+      "baseVolumeAtomic": "2520300000",
+      "quoteVolumeAtomic": "2518546229"
+    },
+    {
+      "start": "2026-07-03T07:15:00.000Z",
+      "end": "2026-07-03T07:20:00.000Z",
+      "status": "filled",
+      "eventCount": 7,
+      "open": "0.999468999316",
+      "high": "0.99960799155",
+      "low": "0.999468987115",
+      "close": "0.999468989606",
+      "baseVolumeAtomic": "367400000",
+      "quoteVolumeAtomic": "367226574"
+    },
+    {
+      "start": "2026-07-03T07:20:00.000Z",
+      "end": "2026-07-03T07:25:00.000Z",
+      "status": "filled",
+      "eventCount": 7,
+      "open": "0.999607993292",
+      "high": "0.999643982002",
+      "low": "0.99946898897",
+      "close": "0.999643982002",
+      "baseVolumeAtomic": "387290000",
+      "quoteVolumeAtomic": "387118701"
+    },
+    {
+      "start": "2026-07-03T07:25:00.000Z",
+      "end": "2026-07-03T07:30:00.000Z",
+      "status": "filled",
+      "eventCount": 8,
+      "open": "0.999505990697",
+      "high": "0.999644",
+      "low": "0.99950598335",
+      "close": "0.999505984892",
+      "baseVolumeAtomic": "402500000",
+      "quoteVolumeAtomic": "402326382"
+    },
+    {
+      "start": "2026-07-03T07:30:00.000Z",
+      "end": "2026-07-03T07:35:00.000Z",
+      "status": "filled",
+      "eventCount": 7,
+      "open": "0.999643990216",
+      "high": "0.999644",
+      "low": "0.99950599243",
+      "close": "0.999643999133",
+      "baseVolumeAtomic": "347440000",
+      "quoteVolumeAtomic": "347295851"
+    },
+    {
+      "start": "2026-07-03T07:35:00.000Z",
+      "end": "2026-07-03T07:40:00.000Z",
+      "status": "filled",
+      "eventCount": 12,
+      "open": "0.999505993545",
+      "high": "0.999643997537",
+      "low": "0.999249945355",
+      "close": "0.999643984183",
+      "baseVolumeAtomic": "1468070000",
+      "quoteVolumeAtomic": "1467129259"
+    },
+    {
+      "start": "2026-07-03T07:40:00.000Z",
+      "end": "2026-07-03T07:45:00.000Z",
+      "status": "filled",
+      "eventCount": 11,
+      "open": "0.999505997654",
+      "high": "0.999643998628",
+      "low": "0.999249991451",
+      "close": "0.999638992537",
+      "baseVolumeAtomic": "581100000",
+      "quoteVolumeAtomic": "580833460"
     }
   ]
 }
