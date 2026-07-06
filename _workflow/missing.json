@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "barIntervalMinutes": 5,
-  "updatedAt": "2026-07-05T23:44:37.352Z",
+  "updatedAt": "2026-07-06T04:37:54.932Z",
   "pairs": {
     "SUI_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-26T21:45:00.000Z",
-        "lastQueuedBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredCheckpoint": "295124151"
+        "lastQueuedBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredCheckpoint": "295156746"
       },
       "backfill": {
         "status": "running",
@@ -22,9 +22,9 @@
     "DEEP_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-26T16:15:00.000Z",
-        "lastQueuedBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredCheckpoint": "295124151"
+        "lastQueuedBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredCheckpoint": "295156746"
       },
       "backfill": {
         "status": "running",
@@ -38,9 +38,9 @@
     "WAL_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-26T10:25:00.000Z",
-        "lastQueuedBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredCheckpoint": "295124151"
+        "lastQueuedBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredCheckpoint": "295156746"
       },
       "backfill": {
         "status": "running",
@@ -54,9 +54,9 @@
     "NS_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-24T08:25:00.000Z",
-        "lastQueuedBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredCheckpoint": "295124151"
+        "lastQueuedBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredCheckpoint": "295156746"
       },
       "backfill": {
         "status": "running",
@@ -70,9 +70,9 @@
     "USDSUI_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-23T11:05:00.000Z",
-        "lastQueuedBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredBucketStart": "2026-07-05T23:35:00.000Z",
-        "lastCoveredCheckpoint": "295124151"
+        "lastQueuedBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredBucketStart": "2026-07-06T01:35:00.000Z",
+        "lastCoveredCheckpoint": "295156746"
       },
       "backfill": {
         "status": "running",
