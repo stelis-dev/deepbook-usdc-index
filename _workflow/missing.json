@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "barIntervalMinutes": 5,
-  "updatedAt": "2026-07-07T12:39:15.837Z",
+  "updatedAt": "2026-07-07T12:55:05.781Z",
   "pairs": {
     "SUI_USDC": {
       "live": {
@@ -12,8 +12,8 @@
       },
       "backfill": {
         "status": "running",
-        "oldestCoveredBucketStart": "2026-06-26T20:45:00.000Z",
-        "oldestCoveredCheckpoint": "291610492",
+        "oldestCoveredBucketStart": "2026-06-26T20:40:00.000Z",
+        "oldestCoveredCheckpoint": "291609125",
         "cursor": null,
         "stoppedReason": null
       },
@@ -28,8 +28,8 @@
       },
       "backfill": {
         "status": "running",
-        "oldestCoveredBucketStart": "2026-06-26T15:45:00.000Z",
-        "oldestCoveredCheckpoint": "291529098",
+        "oldestCoveredBucketStart": "2026-06-26T15:40:00.000Z",
+        "oldestCoveredCheckpoint": "291527729",
         "cursor": null,
         "stoppedReason": null
       },
@@ -44,8 +44,8 @@
       },
       "backfill": {
         "status": "running",
-        "oldestCoveredBucketStart": "2026-06-26T06:55:00.000Z",
-        "oldestCoveredCheckpoint": "291388667",
+        "oldestCoveredBucketStart": "2026-06-26T06:20:00.000Z",
+        "oldestCoveredCheckpoint": "291379417",
         "cursor": null,
         "stoppedReason": null
       },
@@ -60,8 +60,8 @@
       },
       "backfill": {
         "status": "running",
-        "oldestCoveredBucketStart": "2026-06-23T16:55:00.000Z",
-        "oldestCoveredCheckpoint": "290420436",
+        "oldestCoveredBucketStart": "2026-06-23T14:20:00.000Z",
+        "oldestCoveredCheckpoint": "290379275",
         "cursor": null,
         "stoppedReason": null
       },
@@ -76,8 +76,8 @@
       },
       "backfill": {
         "status": "running",
-        "oldestCoveredBucketStart": "2026-06-23T06:55:00.000Z",
-        "oldestCoveredCheckpoint": "290262120",
+        "oldestCoveredBucketStart": "2026-06-23T06:20:00.000Z",
+        "oldestCoveredCheckpoint": "290253597",
         "cursor": null,
         "stoppedReason": null
       },
