@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "barIntervalMinutes": 5,
-  "updatedAt": "2026-07-08T22:39:35.612Z",
+  "updatedAt": "2026-07-08T22:59:31.665Z",
   "pairs": {
     "SUI_USDC": {
       "live": {
@@ -12,8 +12,8 @@
       },
       "backfill": {
         "status": "running",
-        "oldestCoveredBucketStart": "2026-06-26T19:55:00.000Z",
-        "oldestCoveredCheckpoint": "291596986",
+        "oldestCoveredBucketStart": "2026-06-26T19:50:00.000Z",
+        "oldestCoveredCheckpoint": "291595668",
         "cursor": null,
         "stoppedReason": null
       },
@@ -28,8 +28,8 @@
       },
       "backfill": {
         "status": "running",
-        "oldestCoveredBucketStart": "2026-06-26T14:55:00.000Z",
-        "oldestCoveredCheckpoint": "291515615",
+        "oldestCoveredBucketStart": "2026-06-26T14:50:00.000Z",
+        "oldestCoveredCheckpoint": "291514262",
         "cursor": null,
         "stoppedReason": null
       },
@@ -44,8 +44,8 @@
       },
       "backfill": {
         "status": "running",
-        "oldestCoveredBucketStart": "2026-06-26T02:25:00.000Z",
-        "oldestCoveredCheckpoint": "291317480",
+        "oldestCoveredBucketStart": "2026-06-26T02:10:00.000Z",
+        "oldestCoveredCheckpoint": "291313721",
         "cursor": null,
         "stoppedReason": null
       },
