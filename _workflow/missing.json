@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "barIntervalMinutes": 5,
-  "updatedAt": "2026-07-10T07:30:01.278Z",
+  "updatedAt": "2026-07-10T08:35:27.982Z",
   "pairs": {
     "SUI_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-26T19:10:00.000Z",
-        "lastQueuedBucketStart": "2026-07-10T06:55:00.000Z",
-        "lastCoveredBucketStart": "2026-07-10T06:25:00.000Z",
-        "lastCoveredCheckpoint": "296806484"
+        "lastQueuedBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredCheckpoint": "296839554"
       },
       "backfill": {
         "status": "running",
@@ -17,57 +17,14 @@
         "cursor": null,
         "stoppedReason": null
       },
-      "missingBuckets": [
-        {
-          "start": "2026-07-10T06:30:00.000Z",
-          "end": "2026-07-10T06:35:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:22:29.920Z"
-        },
-        {
-          "start": "2026-07-10T06:35:00.000Z",
-          "end": "2026-07-10T06:40:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:22:29.925Z"
-        },
-        {
-          "start": "2026-07-10T06:40:00.000Z",
-          "end": "2026-07-10T06:45:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:22:29.929Z"
-        },
-        {
-          "start": "2026-07-10T06:45:00.000Z",
-          "end": "2026-07-10T06:50:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:22:29.934Z"
-        },
-        {
-          "start": "2026-07-10T06:50:00.000Z",
-          "end": "2026-07-10T06:55:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:22:29.938Z"
-        },
-        {
-          "start": "2026-07-10T06:55:00.000Z",
-          "end": "2026-07-10T07:00:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:22:29.943Z"
-        }
-      ]
+      "missingBuckets": []
     },
     "DEEP_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-26T14:10:00.000Z",
-        "lastQueuedBucketStart": "2026-07-10T06:55:00.000Z",
-        "lastCoveredBucketStart": "2026-07-10T06:25:00.000Z",
-        "lastCoveredCheckpoint": "296806484"
+        "lastQueuedBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredCheckpoint": "296839554"
       },
       "backfill": {
         "status": "running",
@@ -76,57 +33,14 @@
         "cursor": null,
         "stoppedReason": null
       },
-      "missingBuckets": [
-        {
-          "start": "2026-07-10T06:30:00.000Z",
-          "end": "2026-07-10T06:35:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:24:31.208Z"
-        },
-        {
-          "start": "2026-07-10T06:35:00.000Z",
-          "end": "2026-07-10T06:40:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:24:31.212Z"
-        },
-        {
-          "start": "2026-07-10T06:40:00.000Z",
-          "end": "2026-07-10T06:45:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:24:31.217Z"
-        },
-        {
-          "start": "2026-07-10T06:45:00.000Z",
-          "end": "2026-07-10T06:50:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:24:31.221Z"
-        },
-        {
-          "start": "2026-07-10T06:50:00.000Z",
-          "end": "2026-07-10T06:55:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:24:31.225Z"
-        },
-        {
-          "start": "2026-07-10T06:55:00.000Z",
-          "end": "2026-07-10T07:00:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:24:31.229Z"
-        }
-      ]
+      "missingBuckets": []
     },
     "WAL_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-25T21:30:00.000Z",
-        "lastQueuedBucketStart": "2026-07-10T06:55:00.000Z",
-        "lastCoveredBucketStart": "2026-07-10T06:25:00.000Z",
-        "lastCoveredCheckpoint": "296806484"
+        "lastQueuedBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredCheckpoint": "296839554"
       },
       "backfill": {
         "status": "running",
@@ -135,57 +49,14 @@
         "cursor": null,
         "stoppedReason": null
       },
-      "missingBuckets": [
-        {
-          "start": "2026-07-10T06:30:00.000Z",
-          "end": "2026-07-10T06:35:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:26:28.731Z"
-        },
-        {
-          "start": "2026-07-10T06:35:00.000Z",
-          "end": "2026-07-10T06:40:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:26:28.735Z"
-        },
-        {
-          "start": "2026-07-10T06:40:00.000Z",
-          "end": "2026-07-10T06:45:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:26:28.739Z"
-        },
-        {
-          "start": "2026-07-10T06:45:00.000Z",
-          "end": "2026-07-10T06:50:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:26:28.744Z"
-        },
-        {
-          "start": "2026-07-10T06:50:00.000Z",
-          "end": "2026-07-10T06:55:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:26:28.748Z"
-        },
-        {
-          "start": "2026-07-10T06:55:00.000Z",
-          "end": "2026-07-10T07:00:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:26:28.752Z"
-        }
-      ]
+      "missingBuckets": []
     },
     "NS_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-16T08:00:00.000Z",
-        "lastQueuedBucketStart": "2026-07-10T06:55:00.000Z",
-        "lastCoveredBucketStart": "2026-07-10T06:25:00.000Z",
-        "lastCoveredCheckpoint": "296806484"
+        "lastQueuedBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredCheckpoint": "296839554"
       },
       "backfill": {
         "status": "complete",
@@ -194,57 +65,14 @@
         "cursor": null,
         "stoppedReason": "checkpoint_range_range_before_retained_data"
       },
-      "missingBuckets": [
-        {
-          "start": "2026-07-10T06:30:00.000Z",
-          "end": "2026-07-10T06:35:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:28:14.008Z"
-        },
-        {
-          "start": "2026-07-10T06:35:00.000Z",
-          "end": "2026-07-10T06:40:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:28:14.021Z"
-        },
-        {
-          "start": "2026-07-10T06:40:00.000Z",
-          "end": "2026-07-10T06:45:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:28:14.025Z"
-        },
-        {
-          "start": "2026-07-10T06:45:00.000Z",
-          "end": "2026-07-10T06:50:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:28:14.029Z"
-        },
-        {
-          "start": "2026-07-10T06:50:00.000Z",
-          "end": "2026-07-10T06:55:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:28:14.033Z"
-        },
-        {
-          "start": "2026-07-10T06:55:00.000Z",
-          "end": "2026-07-10T07:00:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:28:14.037Z"
-        }
-      ]
+      "missingBuckets": []
     },
     "USDSUI_USDC": {
       "live": {
         "firstCoveredBucketStart": "2026-06-16T05:05:00.000Z",
-        "lastQueuedBucketStart": "2026-07-10T06:55:00.000Z",
-        "lastCoveredBucketStart": "2026-07-10T06:25:00.000Z",
-        "lastCoveredCheckpoint": "296806484"
+        "lastQueuedBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredBucketStart": "2026-07-10T08:25:00.000Z",
+        "lastCoveredCheckpoint": "296839554"
       },
       "backfill": {
         "status": "complete",
@@ -253,50 +81,7 @@
         "cursor": null,
         "stoppedReason": "checkpoint_range_range_before_retained_data"
       },
-      "missingBuckets": [
-        {
-          "start": "2026-07-10T06:30:00.000Z",
-          "end": "2026-07-10T06:35:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:30:01.183Z"
-        },
-        {
-          "start": "2026-07-10T06:35:00.000Z",
-          "end": "2026-07-10T06:40:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:30:01.187Z"
-        },
-        {
-          "start": "2026-07-10T06:40:00.000Z",
-          "end": "2026-07-10T06:45:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:30:01.192Z"
-        },
-        {
-          "start": "2026-07-10T06:45:00.000Z",
-          "end": "2026-07-10T06:50:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:30:01.196Z"
-        },
-        {
-          "start": "2026-07-10T06:50:00.000Z",
-          "end": "2026-07-10T06:55:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:30:01.200Z"
-        },
-        {
-          "start": "2026-07-10T06:55:00.000Z",
-          "end": "2026-07-10T07:00:00.000Z",
-          "reason": "checkpoint_resolution_range_after_latest_checkpoint",
-          "attempts": 1,
-          "lastAttemptedAt": "2026-07-10T07:30:01.204Z"
-        }
-      ]
+      "missingBuckets": []
     }
   }
 }
