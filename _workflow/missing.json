@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "barIntervalMinutes": 5,
-  "updatedAt": "2026-07-11T06:25:31.963Z",
+  "updatedAt": "2026-07-11T07:01:24.641Z",
   "pairs": {
     "SUI_USDC": {
       "live": {
@@ -11,11 +11,11 @@
         "lastCoveredCheckpoint": "297159426"
       },
       "backfill": {
-        "status": "running",
+        "status": "complete",
         "oldestCoveredBucketStart": "2026-06-26T18:30:00.000Z",
         "oldestCoveredCheckpoint": "291573977",
         "cursor": null,
-        "stoppedReason": null
+        "stoppedReason": "checkpoint_range_range_before_retained_data"
       },
       "missingBuckets": [
         {
