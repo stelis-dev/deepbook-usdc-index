@@ -24131,6 +24131,78 @@
       "close": null,
       "baseVolumeAtomic": "0",
       "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-12T23:30:00.000Z",
+      "end": "2026-07-12T23:35:00.000Z",
+      "status": "filled",
+      "eventCount": 11,
+      "open": "0.030768995889",
+      "high": "0.030768998035",
+      "low": "0.030721983471",
+      "close": "0.030721983471",
+      "baseVolumeAtomic": "1226000000000",
+      "quoteVolumeAtomic": "37715956"
+    },
+    {
+      "start": "2026-07-12T23:35:00.000Z",
+      "end": "2026-07-12T23:40:00.000Z",
+      "status": "filled",
+      "eventCount": 1,
+      "open": "0.030753",
+      "high": "0.030753",
+      "low": "0.030753",
+      "close": "0.030753",
+      "baseVolumeAtomic": "1000000000",
+      "quoteVolumeAtomic": "30753"
+    },
+    {
+      "start": "2026-07-12T23:40:00.000Z",
+      "end": "2026-07-12T23:45:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-12T23:45:00.000Z",
+      "end": "2026-07-12T23:50:00.000Z",
+      "status": "filled",
+      "eventCount": 38,
+      "open": "0.030721",
+      "high": "0.030737999509",
+      "low": "0.030621999589",
+      "close": "0.030706",
+      "baseVolumeAtomic": "89902800000000",
+      "quoteVolumeAtomic": "2758802047"
+    },
+    {
+      "start": "2026-07-12T23:50:00.000Z",
+      "end": "2026-07-12T23:55:00.000Z",
+      "status": "filled",
+      "eventCount": 4,
+      "open": "0.030706",
+      "high": "0.030731996314",
+      "low": "0.030706",
+      "close": "0.030731996314",
+      "baseVolumeAtomic": "1580500000000",
+      "quoteVolumeAtomic": "48561867"
+    },
+    {
+      "start": "2026-07-12T23:55:00.000Z",
+      "end": "2026-07-13T00:00:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
     }
   ]
 }

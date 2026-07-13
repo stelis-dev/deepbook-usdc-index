@@ -24131,6 +24131,78 @@
       "close": null,
       "baseVolumeAtomic": "0",
       "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-12T23:30:00.000Z",
+      "end": "2026-07-12T23:35:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-12T23:35:00.000Z",
+      "end": "2026-07-12T23:40:00.000Z",
+      "status": "filled",
+      "eventCount": 5,
+      "open": "0.01748",
+      "high": "0.01749",
+      "low": "0.01748",
+      "close": "0.01749",
+      "baseVolumeAtomic": "1586000000",
+      "quoteVolumeAtomic": "27724280"
+    },
+    {
+      "start": "2026-07-12T23:40:00.000Z",
+      "end": "2026-07-12T23:45:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-12T23:45:00.000Z",
+      "end": "2026-07-12T23:50:00.000Z",
+      "status": "filled",
+      "eventCount": 13,
+      "open": "0.01747",
+      "high": "0.01747",
+      "low": "0.01744",
+      "close": "0.01744",
+      "baseVolumeAtomic": "5192000000",
+      "quoteVolumeAtomic": "90620240"
+    },
+    {
+      "start": "2026-07-12T23:50:00.000Z",
+      "end": "2026-07-12T23:55:00.000Z",
+      "status": "filled",
+      "eventCount": 3,
+      "open": "0.01747",
+      "high": "0.01747",
+      "low": "0.01747",
+      "close": "0.01747",
+      "baseVolumeAtomic": "656000000",
+      "quoteVolumeAtomic": "11460320"
+    },
+    {
+      "start": "2026-07-12T23:55:00.000Z",
+      "end": "2026-07-13T00:00:00.000Z",
+      "status": "filled",
+      "eventCount": 4,
+      "open": "0.01745",
+      "high": "0.01745",
+      "low": "0.01744",
+      "close": "0.01744",
+      "baseVolumeAtomic": "1600000000",
+      "quoteVolumeAtomic": "27912000"
     }
   ]
 }
