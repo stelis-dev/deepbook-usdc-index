@@ -22911,14 +22911,14 @@
     {
       "start": "2026-07-19T15:00:00.000Z",
       "end": "2026-07-19T15:05:00.000Z",
-      "status": "empty",
-      "eventCount": 0,
-      "open": null,
-      "high": null,
-      "low": null,
-      "close": null,
-      "baseVolumeAtomic": "0",
-      "quoteVolumeAtomic": "0"
+      "status": "filled",
+      "eventCount": 3,
+      "open": "0.999986666666",
+      "high": "0.999986666666",
+      "low": "0.999855994931",
+      "close": "0.999855994931",
+      "baseVolumeAtomic": "189260000",
+      "quoteVolumeAtomic": "189237855"
     },
     {
       "start": "2026-07-19T15:05:00.000Z",

@@ -23091,14 +23091,14 @@
     {
       "start": "2026-07-19T16:15:00.000Z",
       "end": "2026-07-19T16:20:00.000Z",
-      "status": "empty",
-      "eventCount": 0,
-      "open": null,
-      "high": null,
-      "low": null,
-      "close": null,
-      "baseVolumeAtomic": "0",
-      "quoteVolumeAtomic": "0"
+      "status": "filled",
+      "eventCount": 43,
+      "open": "0.01736",
+      "high": "0.01738",
+      "low": "0.01734",
+      "close": "0.01738",
+      "baseVolumeAtomic": "10388000000",
+      "quoteVolumeAtomic": "180448880"
     },
     {
       "start": "2026-07-19T16:20:00.000Z",

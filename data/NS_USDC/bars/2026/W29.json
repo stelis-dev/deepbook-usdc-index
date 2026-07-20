@@ -22912,13 +22912,13 @@
       "start": "2026-07-19T15:00:00.000Z",
       "end": "2026-07-19T15:05:00.000Z",
       "status": "filled",
-      "eventCount": 4,
+      "eventCount": 23,
       "open": "0.01146",
-      "high": "0.01149",
-      "low": "0.01145",
-      "close": "0.01149",
-      "baseVolumeAtomic": "2154100000",
-      "quoteVolumeAtomic": "24696051"
+      "high": "0.01163",
+      "low": "0.01001",
+      "close": "0.01001",
+      "baseVolumeAtomic": "14781700000",
+      "quoteVolumeAtomic": "171086152"
     },
     {
       "start": "2026-07-19T15:05:00.000Z",
