@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "pairId": "DEEP_USDC",
+  "week": {
+    "weekYear": 2026,
+    "week": 31,
+    "startsAt": "2026-07-27T00:00:00.000Z",
+    "endsAt": "2026-08-03T00:00:00.000Z",
+    "timeZone": "UTC"
+  },
+  "barIntervalMinutes": 5,
+  "priceConvention": "USDC_PER_BASE",
+  "disclaimer": "USDC is a token-denominated reference asset in this repository. It is not fiat USD and this repository does not guarantee a USDC/USD peg.",
+  "bars": [
+    {
+      "start": "2026-07-27T00:00:00.000Z",
+      "end": "2026-07-27T00:05:00.000Z",
+      "status": "filled",
+      "eventCount": 4,
+      "open": "0.01772",
+      "high": "0.01772",
+      "low": "0.01765",
+      "close": "0.01772",
+      "baseVolumeAtomic": "94539000000",
+      "quoteVolumeAtomic": "1668659550"
+    },
+    {
+      "start": "2026-07-27T00:05:00.000Z",
+      "end": "2026-07-27T00:10:00.000Z",
+      "status": "filled",
+      "eventCount": 1,
+      "open": "0.01773",
+      "high": "0.01773",
+      "low": "0.01773",
+      "close": "0.01773",
+      "baseVolumeAtomic": "100000000",
+      "quoteVolumeAtomic": "1773000"
+    },
+    {
+      "start": "2026-07-27T00:10:00.000Z",
+      "end": "2026-07-27T00:15:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-27T00:15:00.000Z",
+      "end": "2026-07-27T00:20:00.000Z",
+      "status": "filled",
+      "eventCount": 1,
+      "open": "0.01766",
+      "high": "0.01766",
+      "low": "0.01766",
+      "close": "0.01766",
+      "baseVolumeAtomic": "400000000",
+      "quoteVolumeAtomic": "7064000"
+    },
+    {
+      "start": "2026-07-27T00:20:00.000Z",
+      "end": "2026-07-27T00:25:00.000Z",
+      "status": "filled",
+      "eventCount": 1,
+      "open": "0.01767",
+      "high": "0.01767",
+      "low": "0.01767",
+      "close": "0.01767",
+      "baseVolumeAtomic": "100000000",
+      "quoteVolumeAtomic": "1767000"
+    },
+    {
+      "start": "2026-07-27T00:25:00.000Z",
+      "end": "2026-07-27T00:30:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-27T00:30:00.000Z",
+      "end": "2026-07-27T00:35:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-27T00:35:00.000Z",
+      "end": "2026-07-27T00:40:00.000Z",
+      "status": "filled",
+      "eventCount": 4,
+      "open": "0.01761",
+      "high": "0.01761",
+      "low": "0.01761",
+      "close": "0.01761",
+      "baseVolumeAtomic": "921000000",
+      "quoteVolumeAtomic": "16218810"
+    },
+    {
+      "start": "2026-07-27T00:40:00.000Z",
+      "end": "2026-07-27T00:45:00.000Z",
+      "status": "filled",
+      "eventCount": 3,
+      "open": "0.01763",
+      "high": "0.01763",
+      "low": "0.01761",
+      "close": "0.01761",
+      "baseVolumeAtomic": "814000000",
+      "quoteVolumeAtomic": "14345740"
+    },
+    {
+      "start": "2026-07-27T00:45:00.000Z",
+      "end": "2026-07-27T00:50:00.000Z",
+      "status": "filled",
+      "eventCount": 9,
+      "open": "0.01767",
+      "high": "0.0177",
+      "low": "0.01767",
+      "close": "0.0177",
+      "baseVolumeAtomic": "1943000000",
+      "quoteVolumeAtomic": "34348640"
+    },
+    {
+      "start": "2026-07-27T00:50:00.000Z",
+      "end": "2026-07-27T00:55:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-27T00:55:00.000Z",
+      "end": "2026-07-27T01:00:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-07-27T01:00:00.000Z",
+      "end": "2026-07-27T01:05:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    }
+  ]
+}
