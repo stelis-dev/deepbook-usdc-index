@@ -20303,6 +20303,90 @@
       "close": null,
       "baseVolumeAtomic": "0",
       "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-15T20:55:00.000Z",
+      "end": "2026-08-15T21:00:00.000Z",
+      "status": "filled",
+      "eventCount": 7,
+      "open": "0.67909",
+      "high": "0.67964",
+      "low": "0.67909",
+      "close": "0.67964",
+      "baseVolumeAtomic": "1666100000000",
+      "quoteVolumeAtomic": "1131827464"
+    },
+    {
+      "start": "2026-08-15T21:00:00.000Z",
+      "end": "2026-08-15T21:05:00.000Z",
+      "status": "filled",
+      "eventCount": 3,
+      "open": "0.67912",
+      "high": "0.67954",
+      "low": "0.67912",
+      "close": "0.67954",
+      "baseVolumeAtomic": "2635900000000",
+      "quoteVolumeAtomic": "1790255445"
+    },
+    {
+      "start": "2026-08-15T21:05:00.000Z",
+      "end": "2026-08-15T21:10:00.000Z",
+      "status": "filled",
+      "eventCount": 3,
+      "open": "0.6795",
+      "high": "0.6795",
+      "low": "0.6794",
+      "close": "0.6794",
+      "baseVolumeAtomic": "877000000000",
+      "quoteVolumeAtomic": "595834020"
+    },
+    {
+      "start": "2026-08-15T21:10:00.000Z",
+      "end": "2026-08-15T21:15:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-15T21:15:00.000Z",
+      "end": "2026-08-15T21:20:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-15T21:20:00.000Z",
+      "end": "2026-08-15T21:25:00.000Z",
+      "status": "filled",
+      "eventCount": 4,
+      "open": "0.67997",
+      "high": "0.67997",
+      "low": "0.67949",
+      "close": "0.67949",
+      "baseVolumeAtomic": "845200000000",
+      "quoteVolumeAtomic": "574381276"
+    },
+    {
+      "start": "2026-08-15T21:25:00.000Z",
+      "end": "2026-08-15T21:30:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
     }
   ]
 }
