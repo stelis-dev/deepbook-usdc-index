@@ -17891,6 +17891,78 @@
       "close": "0.68444",
       "baseVolumeAtomic": "744000000000",
       "quoteVolumeAtomic": "509461259"
+    },
+    {
+      "start": "2026-08-15T04:10:00.000Z",
+      "end": "2026-08-15T04:15:00.000Z",
+      "status": "filled",
+      "eventCount": 12,
+      "open": "0.68413",
+      "high": "0.68432",
+      "low": "0.68399",
+      "close": "0.68432",
+      "baseVolumeAtomic": "1132300000000",
+      "quoteVolumeAtomic": "774621018"
+    },
+    {
+      "start": "2026-08-15T04:15:00.000Z",
+      "end": "2026-08-15T04:20:00.000Z",
+      "status": "filled",
+      "eventCount": 2,
+      "open": "0.6845",
+      "high": "0.68469",
+      "low": "0.6845",
+      "close": "0.68469",
+      "baseVolumeAtomic": "20700000000",
+      "quoteVolumeAtomic": "14171848"
+    },
+    {
+      "start": "2026-08-15T04:20:00.000Z",
+      "end": "2026-08-15T04:25:00.000Z",
+      "status": "filled",
+      "eventCount": 9,
+      "open": "0.685",
+      "high": "0.685",
+      "low": "0.68453",
+      "close": "0.68477",
+      "baseVolumeAtomic": "1361200000000",
+      "quoteVolumeAtomic": "932246196"
+    },
+    {
+      "start": "2026-08-15T04:25:00.000Z",
+      "end": "2026-08-15T04:30:00.000Z",
+      "status": "filled",
+      "eventCount": 7,
+      "open": "0.68497",
+      "high": "0.68503",
+      "low": "0.68473",
+      "close": "0.68483",
+      "baseVolumeAtomic": "600500000000",
+      "quoteVolumeAtomic": "411334874"
+    },
+    {
+      "start": "2026-08-15T04:30:00.000Z",
+      "end": "2026-08-15T04:35:00.000Z",
+      "status": "filled",
+      "eventCount": 15,
+      "open": "0.68479",
+      "high": "0.6855",
+      "low": "0.68438",
+      "close": "0.6855",
+      "baseVolumeAtomic": "2225300000000",
+      "quoteVolumeAtomic": "1524773782"
+    },
+    {
+      "start": "2026-08-15T04:35:00.000Z",
+      "end": "2026-08-15T04:40:00.000Z",
+      "status": "filled",
+      "eventCount": 13,
+      "open": "0.68482",
+      "high": "0.68502",
+      "low": "0.68441",
+      "close": "0.68501",
+      "baseVolumeAtomic": "513900000000",
+      "quoteVolumeAtomic": "351994870"
     }
   ]
 }
