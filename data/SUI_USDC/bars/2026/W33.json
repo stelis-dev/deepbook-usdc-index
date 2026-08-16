@@ -21359,6 +21359,18 @@
       "close": "0.6752",
       "baseVolumeAtomic": "748800000000",
       "quoteVolumeAtomic": "505589460"
+    },
+    {
+      "start": "2026-08-16T04:15:00.000Z",
+      "end": "2026-08-16T04:20:00.000Z",
+      "status": "filled",
+      "eventCount": 10,
+      "open": "0.67507",
+      "high": "0.67556",
+      "low": "0.67501",
+      "close": "0.67545",
+      "baseVolumeAtomic": "2281300000000",
+      "quoteVolumeAtomic": "1540400105"
     }
   ]
 }
