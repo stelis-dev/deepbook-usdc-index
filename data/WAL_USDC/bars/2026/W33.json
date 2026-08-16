@@ -22319,6 +22319,90 @@
       "close": "0.022330997752",
       "baseVolumeAtomic": "1654900000000",
       "quoteVolumeAtomic": "36973271"
+    },
+    {
+      "start": "2026-08-16T10:55:00.000Z",
+      "end": "2026-08-16T11:00:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-16T11:00:00.000Z",
+      "end": "2026-08-16T11:05:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-16T11:05:00.000Z",
+      "end": "2026-08-16T11:10:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-16T11:10:00.000Z",
+      "end": "2026-08-16T11:15:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-16T11:15:00.000Z",
+      "end": "2026-08-16T11:20:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-16T11:20:00.000Z",
+      "end": "2026-08-16T11:25:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-16T11:25:00.000Z",
+      "end": "2026-08-16T11:30:00.000Z",
+      "status": "filled",
+      "eventCount": 55,
+      "open": "0.02233",
+      "high": "0.022366990185",
+      "low": "0.022135",
+      "close": "0.022267996348",
+      "baseVolumeAtomic": "11462600000000",
+      "quoteVolumeAtomic": "255550446"
     }
   ]
 }
