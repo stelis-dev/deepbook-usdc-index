@@ -22895,6 +22895,90 @@
       "close": "0.02211299822",
       "baseVolumeAtomic": "8673000000000",
       "quoteVolumeAtomic": "192018264"
+    },
+    {
+      "start": "2026-08-16T14:55:00.000Z",
+      "end": "2026-08-16T15:00:00.000Z",
+      "status": "filled",
+      "eventCount": 29,
+      "open": "0.022107996461",
+      "high": "0.02220298387",
+      "low": "0.02209",
+      "close": "0.0221",
+      "baseVolumeAtomic": "4595600000000",
+      "quoteVolumeAtomic": "101614156"
+    },
+    {
+      "start": "2026-08-16T15:00:00.000Z",
+      "end": "2026-08-16T15:05:00.000Z",
+      "status": "filled",
+      "eventCount": 143,
+      "open": "0.022113996463",
+      "high": "0.022202996616",
+      "low": "0.022",
+      "close": "0.022042993951",
+      "baseVolumeAtomic": "26211600000000",
+      "quoteVolumeAtomic": "579243533"
+    },
+    {
+      "start": "2026-08-16T15:05:00.000Z",
+      "end": "2026-08-16T15:10:00.000Z",
+      "status": "filled",
+      "eventCount": 73,
+      "open": "0.022048997349",
+      "high": "0.022103999127",
+      "low": "0.02201",
+      "close": "0.022020999115",
+      "baseVolumeAtomic": "8307900000000",
+      "quoteVolumeAtomic": "182987954"
+    },
+    {
+      "start": "2026-08-16T15:10:00.000Z",
+      "end": "2026-08-16T15:15:00.000Z",
+      "status": "filled",
+      "eventCount": 15,
+      "open": "0.022013996478",
+      "high": "0.022096992619",
+      "low": "0.02201",
+      "close": "0.022039",
+      "baseVolumeAtomic": "1637300000000",
+      "quoteVolumeAtomic": "36064118"
+    },
+    {
+      "start": "2026-08-16T15:15:00.000Z",
+      "end": "2026-08-16T15:20:00.000Z",
+      "status": "filled",
+      "eventCount": 12,
+      "open": "0.022049",
+      "high": "0.022075",
+      "low": "0.022",
+      "close": "0.02206",
+      "baseVolumeAtomic": "1559700000000",
+      "quoteVolumeAtomic": "34393087"
+    },
+    {
+      "start": "2026-08-16T15:20:00.000Z",
+      "end": "2026-08-16T15:25:00.000Z",
+      "status": "filled",
+      "eventCount": 57,
+      "open": "0.022071996114",
+      "high": "0.022146829268",
+      "low": "0.02206",
+      "close": "0.02207499759",
+      "baseVolumeAtomic": "6170400000000",
+      "quoteVolumeAtomic": "136213829"
+    },
+    {
+      "start": "2026-08-16T15:25:00.000Z",
+      "end": "2026-08-16T15:30:00.000Z",
+      "status": "filled",
+      "eventCount": 22,
+      "open": "0.022096996466",
+      "high": "0.022171989051",
+      "low": "0.022088996906",
+      "close": "0.022102999116",
+      "baseVolumeAtomic": "2748000000000",
+      "quoteVolumeAtomic": "60714185"
     }
   ]
 }
