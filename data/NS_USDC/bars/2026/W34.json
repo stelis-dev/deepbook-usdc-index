@@ -1991,6 +1991,126 @@
       "close": null,
       "baseVolumeAtomic": "0",
       "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-17T13:45:00.000Z",
+      "end": "2026-08-17T13:50:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-17T13:50:00.000Z",
+      "end": "2026-08-17T13:55:00.000Z",
+      "status": "filled",
+      "eventCount": 3,
+      "open": "0.01064",
+      "high": "0.01064",
+      "low": "0.01056",
+      "close": "0.01056",
+      "baseVolumeAtomic": "50331000000",
+      "quoteVolumeAtomic": "533067100"
+    },
+    {
+      "start": "2026-08-17T13:55:00.000Z",
+      "end": "2026-08-17T14:00:00.000Z",
+      "status": "filled",
+      "eventCount": 7,
+      "open": "0.0106",
+      "high": "0.01062",
+      "low": "0.01058",
+      "close": "0.01058",
+      "baseVolumeAtomic": "5007000000",
+      "quoteVolumeAtomic": "53154574"
+    },
+    {
+      "start": "2026-08-17T14:00:00.000Z",
+      "end": "2026-08-17T14:05:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-17T14:05:00.000Z",
+      "end": "2026-08-17T14:10:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-17T14:10:00.000Z",
+      "end": "2026-08-17T14:15:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-17T14:15:00.000Z",
+      "end": "2026-08-17T14:20:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-17T14:20:00.000Z",
+      "end": "2026-08-17T14:25:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-17T14:25:00.000Z",
+      "end": "2026-08-17T14:30:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-17T14:30:00.000Z",
+      "end": "2026-08-17T14:35:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
     }
   ]
 }
