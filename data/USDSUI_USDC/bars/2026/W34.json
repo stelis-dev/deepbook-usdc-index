@@ -6287,6 +6287,54 @@
       "close": null,
       "baseVolumeAtomic": "0",
       "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-18T19:35:00.000Z",
+      "end": "2026-08-18T19:40:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-18T19:40:00.000Z",
+      "end": "2026-08-18T19:45:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-18T19:45:00.000Z",
+      "end": "2026-08-18T19:50:00.000Z",
+      "status": "filled",
+      "eventCount": 5,
+      "open": "1.000701967493",
+      "high": "1.000701967493",
+      "low": "1.000292945128",
+      "close": "1.000292985074",
+      "baseVolumeAtomic": "113970000",
+      "quoteVolumeAtomic": "114016408"
+    },
+    {
+      "start": "2026-08-18T19:50:00.000Z",
+      "end": "2026-08-18T19:55:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
     }
   ]
 }
