@@ -5879,6 +5879,126 @@
       "close": "0.021623",
       "baseVolumeAtomic": "4483500000000",
       "quoteVolumeAtomic": "96685569"
+    },
+    {
+      "start": "2026-08-18T16:45:00.000Z",
+      "end": "2026-08-18T16:50:00.000Z",
+      "status": "filled",
+      "eventCount": 36,
+      "open": "0.021623",
+      "high": "0.02165",
+      "low": "0.021603",
+      "close": "0.021616",
+      "baseVolumeAtomic": "4570400000000",
+      "quoteVolumeAtomic": "98795944"
+    },
+    {
+      "start": "2026-08-18T16:50:00.000Z",
+      "end": "2026-08-18T16:55:00.000Z",
+      "status": "filled",
+      "eventCount": 11,
+      "open": "0.02155",
+      "high": "0.021553999867",
+      "low": "0.021523",
+      "close": "0.021523",
+      "baseVolumeAtomic": "4652200000000",
+      "quoteVolumeAtomic": "100273296"
+    },
+    {
+      "start": "2026-08-18T16:55:00.000Z",
+      "end": "2026-08-18T17:00:00.000Z",
+      "status": "filled",
+      "eventCount": 6,
+      "open": "0.021552",
+      "high": "0.021552998585",
+      "low": "0.02155125",
+      "close": "0.021552998585",
+      "baseVolumeAtomic": "900900000000",
+      "quoteVolumeAtomic": "19416632"
+    },
+    {
+      "start": "2026-08-18T17:00:00.000Z",
+      "end": "2026-08-18T17:05:00.000Z",
+      "status": "filled",
+      "eventCount": 35,
+      "open": "0.021545",
+      "high": "0.02163",
+      "low": "0.0213975",
+      "close": "0.021555",
+      "baseVolumeAtomic": "15894400000000",
+      "quoteVolumeAtomic": "343135400"
+    },
+    {
+      "start": "2026-08-18T17:05:00.000Z",
+      "end": "2026-08-18T17:10:00.000Z",
+      "status": "filled",
+      "eventCount": 52,
+      "open": "0.021645",
+      "high": "0.02169899696",
+      "low": "0.02156",
+      "close": "0.021656999953",
+      "baseVolumeAtomic": "67420000000000",
+      "quoteVolumeAtomic": "1459601763"
+    },
+    {
+      "start": "2026-08-18T17:10:00.000Z",
+      "end": "2026-08-18T17:15:00.000Z",
+      "status": "filled",
+      "eventCount": 57,
+      "open": "0.021656994991",
+      "high": "0.021836996064",
+      "low": "0.02162",
+      "close": "0.02174",
+      "baseVolumeAtomic": "8455900000000",
+      "quoteVolumeAtomic": "184055256"
+    },
+    {
+      "start": "2026-08-18T17:15:00.000Z",
+      "end": "2026-08-18T17:20:00.000Z",
+      "status": "filled",
+      "eventCount": 23,
+      "open": "0.02175",
+      "high": "0.021758",
+      "low": "0.02172",
+      "close": "0.021758",
+      "baseVolumeAtomic": "30121200000000",
+      "quoteVolumeAtomic": "655217698"
+    },
+    {
+      "start": "2026-08-18T17:20:00.000Z",
+      "end": "2026-08-18T17:25:00.000Z",
+      "status": "filled",
+      "eventCount": 17,
+      "open": "0.021724",
+      "high": "0.021757999839",
+      "low": "0.021657999948",
+      "close": "0.02166",
+      "baseVolumeAtomic": "10183100000000",
+      "quoteVolumeAtomic": "221021314"
+    },
+    {
+      "start": "2026-08-18T17:25:00.000Z",
+      "end": "2026-08-18T17:30:00.000Z",
+      "status": "empty",
+      "eventCount": 0,
+      "open": null,
+      "high": null,
+      "low": null,
+      "close": null,
+      "baseVolumeAtomic": "0",
+      "quoteVolumeAtomic": "0"
+    },
+    {
+      "start": "2026-08-18T17:30:00.000Z",
+      "end": "2026-08-18T17:35:00.000Z",
+      "status": "filled",
+      "eventCount": 1,
+      "open": "0.021651",
+      "high": "0.021651",
+      "low": "0.021651",
+      "close": "0.021651",
+      "baseVolumeAtomic": "1000000000",
+      "quoteVolumeAtomic": "21651"
     }
   ]
 }
