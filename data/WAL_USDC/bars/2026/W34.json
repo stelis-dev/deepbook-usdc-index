@@ -15107,6 +15107,138 @@
       "close": "0.024031",
       "baseVolumeAtomic": "12673200000000",
       "quoteVolumeAtomic": "303905355"
+    },
+    {
+      "start": "2026-08-21T08:50:00.000Z",
+      "end": "2026-08-21T08:55:00.000Z",
+      "status": "filled",
+      "eventCount": 18,
+      "open": "0.024058996062",
+      "high": "0.024175996131",
+      "low": "0.024058996062",
+      "close": "0.024175996122",
+      "baseVolumeAtomic": "2190900000000",
+      "quoteVolumeAtomic": "52907901"
+    },
+    {
+      "start": "2026-08-21T08:55:00.000Z",
+      "end": "2026-08-21T09:00:00.000Z",
+      "status": "filled",
+      "eventCount": 34,
+      "open": "0.024176",
+      "high": "0.024266974789",
+      "low": "0.024163",
+      "close": "0.024266974789",
+      "baseVolumeAtomic": "4206300000000",
+      "quoteVolumeAtomic": "101747530"
+    },
+    {
+      "start": "2026-08-21T09:00:00.000Z",
+      "end": "2026-08-21T09:05:00.000Z",
+      "status": "filled",
+      "eventCount": 40,
+      "open": "0.024174997581",
+      "high": "0.024242997578",
+      "low": "0.02373",
+      "close": "0.023807999047",
+      "baseVolumeAtomic": "18489400000000",
+      "quoteVolumeAtomic": "442317114"
+    },
+    {
+      "start": "2026-08-21T09:05:00.000Z",
+      "end": "2026-08-21T09:10:00.000Z",
+      "status": "filled",
+      "eventCount": 87,
+      "open": "0.023825998094",
+      "high": "0.023835996186",
+      "low": "0.023565",
+      "close": "0.023826",
+      "baseVolumeAtomic": "129201100000000",
+      "quoteVolumeAtomic": "3060246359"
+    },
+    {
+      "start": "2026-08-21T09:10:00.000Z",
+      "end": "2026-08-21T09:15:00.000Z",
+      "status": "filled",
+      "eventCount": 17,
+      "open": "0.023876999522",
+      "high": "0.023946999258",
+      "low": "0.023831",
+      "close": "0.023831",
+      "baseVolumeAtomic": "5552600000000",
+      "quoteVolumeAtomic": "132632702"
+    },
+    {
+      "start": "2026-08-21T09:15:00.000Z",
+      "end": "2026-08-21T09:20:00.000Z",
+      "status": "filled",
+      "eventCount": 47,
+      "open": "0.023776999823",
+      "high": "0.02386",
+      "low": "0.023721999679",
+      "close": "0.023721999679",
+      "baseVolumeAtomic": "61729400000000",
+      "quoteVolumeAtomic": "1467713834"
+    },
+    {
+      "start": "2026-08-21T09:20:00.000Z",
+      "end": "2026-08-21T09:25:00.000Z",
+      "status": "filled",
+      "eventCount": 87,
+      "open": "0.023737996201",
+      "high": "0.023826",
+      "low": "0.02372",
+      "close": "0.023771998097",
+      "baseVolumeAtomic": "59715700000000",
+      "quoteVolumeAtomic": "1418963479"
+    },
+    {
+      "start": "2026-08-21T09:25:00.000Z",
+      "end": "2026-08-21T09:30:00.000Z",
+      "status": "filled",
+      "eventCount": 49,
+      "open": "0.023776998097",
+      "high": "0.023884997611",
+      "low": "0.02372",
+      "close": "0.023872999044",
+      "baseVolumeAtomic": "8386000000000",
+      "quoteVolumeAtomic": "199739376"
+    },
+    {
+      "start": "2026-08-21T09:30:00.000Z",
+      "end": "2026-08-21T09:35:00.000Z",
+      "status": "filled",
+      "eventCount": 21,
+      "open": "0.02389",
+      "high": "0.024030997601",
+      "low": "0.023823333333",
+      "close": "0.024027997125",
+      "baseVolumeAtomic": "15479800000000",
+      "quoteVolumeAtomic": "371073119"
+    },
+    {
+      "start": "2026-08-21T09:35:00.000Z",
+      "end": "2026-08-21T09:40:00.000Z",
+      "status": "filled",
+      "eventCount": 9,
+      "open": "0.023972998944",
+      "high": "0.024072999375",
+      "low": "0.023972998944",
+      "close": "0.024027",
+      "baseVolumeAtomic": "3714100000000",
+      "quoteVolumeAtomic": "89280276"
+    },
+    {
+      "start": "2026-08-21T09:40:00.000Z",
+      "end": "2026-08-21T09:45:00.000Z",
+      "status": "filled",
+      "eventCount": 18,
+      "open": "0.02407499759",
+      "high": "0.024173999917",
+      "low": "0.024025",
+      "close": "0.024173999917",
+      "baseVolumeAtomic": "13248300000000",
+      "quoteVolumeAtomic": "319672039"
     }
   ]
 }
